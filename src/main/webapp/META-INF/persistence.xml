@@ -6,6 +6,9 @@
 
         <class>com.felipe.mvnsalarios.domain.Cargo</class>
         <class>com.felipe.mvnsalarios.domain.Pessoa</class>
+        <class>com.felipe.mvnsalarios.domain.CargoVencimentos</class>
+        <class>com.felipe.mvnsalarios.domain.Vencimentos</class>
+        <class>com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
