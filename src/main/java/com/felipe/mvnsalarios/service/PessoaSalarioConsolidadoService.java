@@ -12,8 +12,11 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
+@Transactional
+@Slf4j
 public class PessoaSalarioConsolidadoService {
 
     @Inject
@@ -31,7 +34,6 @@ public class PessoaSalarioConsolidadoService {
     @Inject
     private VencimentosService vencimentosService;
 
-    @Transactional
     public PessoaSalarioConsolidado save(PessoaSalarioConsolidado pessoaSalarioConsolidado) {
         return pessoaSalarioConsolidadoRepository.save(pessoaSalarioConsolidado);
     }
@@ -39,6 +41,8 @@ public class PessoaSalarioConsolidadoService {
     public void calcularSalariosService() {
         pessoaSalarioConsolidadoRepository.deleteAll();
         List<Pessoa> pessoas = pessoaService.findAll();
+        int qtdPessoas = pessoas.size();
+        int contador = 1;
         for (Pessoa pessoa : pessoas) {
             Cargo cargo = pessoa.getCargo();
             List<CargoVencimentos> cargoVencimentos = cargoVencimentosService.findByCargo(cargo);
@@ -56,7 +60,9 @@ public class PessoaSalarioConsolidadoService {
             pessoaSalarioConsolidado.setNomePessoa(pessoa.getNome());
             pessoaSalarioConsolidado.setPessoa(pessoa);
             pessoaSalarioConsolidado.setSalario(salarioCalculado);
+            log.debug("... " + contador + "/" + qtdPessoas + " - salário calculado de " + pessoa.getNome() + ": " + salarioCalculado);
             save(pessoaSalarioConsolidado);
+            contador++;
         }
     }
 

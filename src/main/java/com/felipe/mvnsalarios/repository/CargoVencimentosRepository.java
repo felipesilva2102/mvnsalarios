@@ -11,30 +11,7 @@ import jakarta.persistence.criteria.Root;
 import java.util.List;
 
 @ApplicationScoped
-public class CargoVencimentosRepository {
-
-    public List<CargoVencimentos> findAll() {
-        EntityManager em = JpaUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try {
-            tx.begin();
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<CargoVencimentos> cq = cb.createQuery(CargoVencimentos.class);
-            Root<CargoVencimentos> root = cq.from(CargoVencimentos.class);
-            cq.select(root);
-
-            return em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        return null;
-    }
+public class CargoVencimentosRepository extends AbstractRepository {
 
     public List<CargoVencimentos> findByCargo(Cargo cargo) {
         EntityManager em = JpaUtil.getEntityManager();

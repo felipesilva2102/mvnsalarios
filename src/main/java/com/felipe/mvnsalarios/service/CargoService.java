@@ -7,12 +7,12 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional
 public class CargoService {
 
     @Inject
     private CargoRepository cargoRepository;
 
-    @Transactional
     public Cargo save(Cargo cargo) {
         return cargoRepository.save(cargo);
     }
