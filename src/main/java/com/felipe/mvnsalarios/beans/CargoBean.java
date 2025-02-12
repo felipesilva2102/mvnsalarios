@@ -8,9 +8,13 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Named
 @RequestScoped
+@Getter
+@Setter
 public class CargoBean {
 
     private String nome;
@@ -21,14 +25,6 @@ public class CargoBean {
     
     @Inject
     private PessoaService pessoaService;
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
 
     public boolean isCargoCriado() {
         return cargoCriado;

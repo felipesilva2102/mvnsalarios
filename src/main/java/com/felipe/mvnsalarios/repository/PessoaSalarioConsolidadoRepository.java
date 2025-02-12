@@ -28,4 +28,23 @@ public class PessoaSalarioConsolidadoRepository {
         return null;
     }
 
+    public void deleteAll() {
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        
+        try {
+            tx.begin();
+            // JPQL para excluir todos os registros da tabela PessoaSalarioConsolidado
+            em.createQuery("DELETE FROM PessoaSalarioConsolidado").executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
 }
