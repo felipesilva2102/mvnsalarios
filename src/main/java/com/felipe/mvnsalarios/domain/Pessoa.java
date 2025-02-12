@@ -45,6 +45,9 @@ public class Pessoa {
 
     @Column(nullable = false)
     private String telefone;
+    
+    @Column(nullable = false)
+    private String pais;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cargo_id")

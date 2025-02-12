@@ -1,10 +1,10 @@
-ID,Descricao,Valor,Tipo
-1,Vencimento Basico Estagiario,400,CREDITO
-2,Vencimento Basico Tecnico,1000,CREDITO
-3,Vencimento Basico Analista,2500,CREDITO
-4,Vencimento Basico Coordenador,5000,CREDITO
-5,Vencimento Basico Gerente,6500,CREDITO
-6,Gratificacao Coordenador,500,CREDITO
-7,Gratificacao Gerente,1000,CREDITO
-8,Plano de Saude,350,DEBITO
-9,Previdencia,11,DEBITO
+ID,Descricao,Tipo,Valor
+1,Vencimento Basico Estagiario,CREDITO,400.00
+2,Vencimento Basico Tecnico,CREDITO,1000.00
+3,Vencimento Basico Analista,CREDITO,2500.00
+4,Vencimento Basico Coordenador,CREDITO,5000.00
+5,Vencimento Basico Gerente,CREDITO,6500.00
+6,Gratificacao Coordenador,CREDITO,500.00
+7,Gratificacao Gerente,CREDITO,1000.00
+8,Plano de Saude,DEBITO,350.00
+9,Previdencia,DEBITO,11.00
