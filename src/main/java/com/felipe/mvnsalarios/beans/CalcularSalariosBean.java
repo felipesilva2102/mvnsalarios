@@ -23,20 +23,20 @@ public class CalcularSalariosBean {
 
     @Inject
     private CargoService cargoService;
-    
+
     @Inject
     private PessoaService pessoaService;
-    
+
     @Inject
     private CargoVencimentosService cargoVencimentosService;
-    
+
     @Inject
     private VencimentosService vencimentosService;
 
     @Inject
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
 
-    public void calcularSalarios(){
+    public void calcularSalarios() {
         List<Pessoa> pessoas = pessoaService.findAll();
         for (Pessoa pessoa : pessoas) {
             Cargo cargo = pessoa.getCargo();
@@ -44,11 +44,10 @@ public class CalcularSalariosBean {
             BigDecimal salarioCalculado = BigDecimal.ZERO;
             for (CargoVencimentos cargoVencimento : cargoVencimentos) {
                 Vencimentos vencimentos = cargoVencimento.getVencimentos();
-                if(vencimentos.getTipoVencimento().equals(TipoVencimento.CREDITO)){
-                    salarioCalculado.add(vencimentos.getValor());
-                }
-                else {
-                    salarioCalculado.subtract(vencimentos.getValor());
+                if (vencimentos.getTipoVencimento().equals(TipoVencimento.CREDITO)) {
+                    salarioCalculado = salarioCalculado.add(vencimentos.getValor());
+                } else {
+                    salarioCalculado = salarioCalculado.subtract(vencimentos.getValor());
                 }
             }
             PessoaSalarioConsolidado pessoaSalarioConsolidado = new PessoaSalarioConsolidado();
