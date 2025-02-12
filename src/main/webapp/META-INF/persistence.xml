@@ -5,6 +5,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>com.felipe.mvnsalarios.domain.Cargo</class>
+        <class>com.felipe.mvnsalarios.domain.Pessoa</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
