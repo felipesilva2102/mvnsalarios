@@ -121,10 +121,25 @@ public class PessoaBean implements Serializable {
     public void calcularSalarios() {
         pessoaSalarioConsolidadoService.calcularSalarios();
         this.products = this.pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Os salários foram atualizados!",
+                        "O cálculo foi concluído com sucesso."));
+
     }
-    
+
     public void calcularSalariosAssincrono() {
-        pessoaSalarioConsolidadoService.calcularSalarios();
+        pessoaSalarioConsolidadoService.calcularSalariosAssincronos();
+        this.products = this.pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Os salários foram atualizados!",
+                        "O cálculo foi concluído com sucesso."));
+
+    }
+
+    public void deleteSalariosCalculados() {
+        pessoaSalarioConsolidadoService.deleteAll();
         this.products = this.pessoaService.findAll();
     }
 

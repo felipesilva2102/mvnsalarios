@@ -25,11 +25,15 @@
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
-                                         styleClass="ui-button-secondary" update="dt-products" style="margin-right: .5rem">
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-assincrono-button" value="Calcular Salários (Assíncrono)" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalariosAssincrono()}"
-                                         styleClass="ui-button-secondary" update="dt-products">
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
+                        </p:commandButton>
+                        <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
+                                         icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
                         </p:commandButton>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
