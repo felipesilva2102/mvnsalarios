@@ -20,7 +20,7 @@ public abstract class AbstractRepository {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
-        cq.select(root);
+        cq.select(root).orderBy(cb.asc(root.get("id")));
         return em.createQuery(cq).getResultList();
     }
 
@@ -93,6 +93,32 @@ public abstract class AbstractRepository {
             }
             e.printStackTrace();
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public <T> void removeOne(Class<T> entityClass, Object id) {
+        EntityManager em = JpaUtil.getEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            T entity = em.find(entityClass, id);
+
+            if (entity != null) {
+                if (em.contains(entity)) {
+                    em.remove(entity);
+                } else {
+                    T mergedEntity = em.merge(entity);
+                    em.remove(mergedEntity);
+                }
+            }
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
         } finally {
             em.close();
         }

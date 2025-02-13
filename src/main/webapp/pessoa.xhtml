@@ -18,10 +18,10 @@
 
                 <p:toolbar>
                     <p:toolbarGroup>
-                        <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{pessoaBean.openNew()}" ajax="true"
-                                         update=":dialogs:manage-product-content" oncomplete="PF('manageProductDialog').show()"
+                        <p:commandButton value="Novo" icon="pi pi-plus" ajax="true" process="@this"
+                                         update=":dialogs:manage-product-content" oncomplete="PF('pessoaDialog').show()"
                                          styleClass="ui-button-success" style="margin-right: .5rem">
-                            <p:resetInput target=":dialogs:manage-product-content" />
+                            <p:resetInput target=":dialogs:pessoaDialog" />
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
@@ -88,15 +88,15 @@
                     </p:column>
 
                     <p:column exportable="false" ariaHeaderText="Actions">
-                        <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-product-content"
-                                         oncomplete="PF('manageProductDialog').show()"
+                        <p:commandButton icon="pi pi-pencil" update=":dialogs:pessoaDialog"
+                                         oncomplete="PF('pessoaDialog').show()"
                                          styleClass="edit-button rounded-button ui-button-success" process="@this">
-                            <p:resetInput target=":dialogs:manage-product-content" />
+                            <p:resetInput target=":dialogs:pessoaDialog" />
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
                         <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash"
                                          process="@this"
-                                         oncomplete="PF('deleteProductDialog').show()">
+                                         oncomplete="PF('deletePessoa').show()">
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
                     </p:column>
@@ -105,6 +105,37 @@
             </h:form>
 
             <h:form id="dialogs">
+                <!-- Modal de Cadastro/Edição -->
+                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog"> 
+                        <h:panelGrid columns="2">
+                            <h:outputLabel for="nome" value="Nome:" />
+                            <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
+                            <h:outputLabel for="cidade" value="Cidade:" />
+                            <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true"/>
+                            <h:outputLabel for="email" value="Email:" />
+                            <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true"/>
+                            <h:outputLabel for="cep" value="CEP:" />
+                            <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true"/>
+                            <h:outputLabel for="endereco" value="Endereço:" />
+                            <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true"/>
+                            <h:outputLabel for="usuario" value="Usuário:" />
+                            <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true"/>
+                            <h:outputLabel for="telefone" value="Telefone:" />
+                            <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true"/>
+                            <h:outputLabel for="pais" value="País:" />
+                            <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true"/>
+                            <h:outputLabel for="cargo" value="Cargo:" />
+                            <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" immediate="true">
+                                <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
+                            </p:selectOneMenu>
+                            <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
+                            <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true"/>
+                        </h:panelGrid>
+                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@this" update=":form:dt-products"
+                                         style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" />
+                        <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
+                </p:dialog>
+
                 <!-- Modal de carregamento -->
                 <p:dialog widgetVar="loadingDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
                     <h:panelGrid columns="2" style="text-align: center;">
@@ -158,13 +189,13 @@
                     </f:facet>
                 </p:dialog>
 
-                <p:confirmDialog widgetVar="deleteProductDialog" showEffect="fade" width="300"
+                <p:confirmDialog widgetVar="deletePessoa" showEffect="fade" width="300"
                                  message="Deletar a pessoa?" header="Confirmação" severity="warn">
-                    <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaBean.deleteProduct}"
-                                     process="@this" update="@form"
-                                     oncomplete="PF('deleteProductDialog').hide()" />
+                    <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaBean.excluir(pessoaBean.pessoa)}"
+                                     process="@this" update=":form:dt-products"
+                                     oncomplete="PF('deletePessoa').hide()" />
                     <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
-                                     onclick="PF('deleteProductDialog').hide()" />
+                                     onclick="PF('deletePessoa').hide()" />
                 </p:confirmDialog>
 
                 <p:confirmDialog global="true" showEffect="fade" width="300">

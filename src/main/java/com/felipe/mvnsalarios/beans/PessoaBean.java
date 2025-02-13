@@ -53,7 +53,6 @@ public class PessoaBean implements Serializable {
     @Inject
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
 
-    private List<Pessoa> itens = new ArrayList<>();
     private Pessoa pessoa = new Pessoa();
 
     private List<Pessoa> products;
@@ -65,10 +64,6 @@ public class PessoaBean implements Serializable {
     public void init() {
         this.products = this.pessoaService.findAll();
         this.selectedProducts = new ArrayList<>();
-    }
-
-    public List<Pessoa> getItens() {
-        return itens;
     }
 
     public List<Cargo> getCargos() {
@@ -88,21 +83,20 @@ public class PessoaBean implements Serializable {
 
     public void salvar() {
         pessoaService.save(pessoa);
-        pessoa = new Pessoa(); // Limpar formulário
+        pessoa = new Pessoa();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Operação efetuada!", null));
-
+        this.products = this.pessoaService.findAll();
     }
 
-    public void excluir(Pessoa Pessoa) {
-        itens.remove(Pessoa);
-        pessoa = new Pessoa();
+    public void excluir(Pessoa pessoa) {
+        pessoaService.removeOne(pessoa);
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Pessoa removida com sucesso!",
                         null));
-
+        this.products = this.pessoaService.findAll();
     }
 
     public void prepararEdicao(Pessoa Pessoa) {
