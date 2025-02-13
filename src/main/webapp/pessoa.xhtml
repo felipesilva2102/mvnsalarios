@@ -1,123 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-us"
+      xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="jakarta.faces.core">
+
     <h:head>
-        <title>Listagem de pessoas</title>
+        <title>.:: Listagem de Pessoas ::.</title>
+        <meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
     </h:head>
+
     <h:body>
-        <h1>Listagem de pessoas</h1>
 
-        <!-- Botão para abrir modal de cadastro/edição -->
-        <p:commandButton value="Cadastrar pessoa" oncomplete="PF('pessoaDialog').show()" update="pessoaForm" style="margin: 5px"/>
-        <p:commandButton value="Calcular/recalcular salários" action="#{pessoaBean.calcularSalarios()}" ajax="true" update="pessoaTable" process="@this" style="margin: 5px"/>
+        <div class="card crud-demo">
+            <h:form id="form">
+                <p:growl id="messages" showDetail="true" />
 
-        <!-- Modal de Cadastro/Edição -->
-        <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog"> 
-            <h:form id="pessoaForm">
-                <h:panelGrid columns="2">
-                    <h:outputLabel for="nome" value="Nome:" />
-                    <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{pessoaBean.openNew()}" ajax="true"
+                                         update=":dialogs:manage-product-content" oncomplete="PF('manageProductDialog').show()"
+                                         styleClass="ui-button-success" style="margin-right: .5rem">
+                            <p:resetInput target=":dialogs:manage-product-content" />
+                        </p:commandButton>
+                        <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
+                                         icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
+                                         styleClass="ui-button-secondary" update="dt-products" style="margin-right: .5rem">
+                        </p:commandButton>
+                        <p:commandButton id="calcular-salarios-assincrono-button" value="Calcular Salários (Assíncrono)" 
+                                         icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalariosAssincrono()}"
+                                         styleClass="ui-button-secondary" update="dt-products">
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="gerar-relatorio-salarios-button" value="Relatório Salários" 
+                                         icon="pi pi-file-pdf" action="#{pessoaBean.gerarRelatorioSalarios()}"
+                                         styleClass="ui-button-secondary" >
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
 
-                    <h:outputLabel for="cidade" value="Cidade:" />
-                    <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true"/>
+                <p:dataTable id="dt-products" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.products}" selectionMode="multiple" 
+                             reflow="true" styleClass="products-table" selection="#{pessoaBean.selectedProducts}"
+                             rowKey="#{pessoa.id}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom">
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">PESSOAS</span>
+                        </div>
+                    </f:facet>
 
-                    <h:outputLabel for="email" value="Email:" />
-                    <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true"/>
+                    <p:column exportable="false"></p:column>
 
-                    <h:outputLabel for="cep" value="CEP:" />
-                    <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true"/>
+                    <p:column headerText="Id" sortBy="#{pessoa.id}" filterBy="#{pessoa.id}">
+                        <h:outputText value="#{pessoa.id}" />
+                    </p:column>
 
-                    <h:outputLabel for="endereco" value="Endereço:" />
-                    <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true"/>
+                    <p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
+                        <h:outputText value="#{pessoa.nome}" />
+                    </p:column>
 
-                    <h:outputLabel for="usuario" value="Usuário:" />
-                    <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true"/>
+                    <p:column headerText="País" sortBy="#{pessoa.pais}" filterBy="#{pessoa.pais}">
+                        <h:outputText value="#{pessoa.pais}" />
+                    </p:column>
 
-                    <h:outputLabel for="telefone" value="Telefone:" />
-                    <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true"/>
+                    <p:column headerText="Cidade" sortBy="#{pessoa.cidade}" filterBy="#{pessoa.cidade}">
+                        <h:outputText value="#{pessoa.cidade}" />
+                    </p:column>
 
-                    <h:outputLabel for="pais" value="País:" />
-                    <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true"/>
+                    <p:column headerText="Salário" sortBy="#{pessoa.pessoaSalarioConsolidado.salario}">
+                        <h:outputText value="#{pessoa.pessoaSalarioConsolidado.salario}" rendered="#{not empty pessoa.pessoaSalarioConsolidado}"/>
+                        <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
+                    </p:column>
 
-                    <h:outputLabel for="cargo" value="Cargo:" />
-                    <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" immediate="true">
-                        <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
-                    </p:selectOneMenu>
+                    <p:column exportable="false" ariaHeaderText="Actions">
+                        <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-product-content"
+                                         oncomplete="PF('manageProductDialog').show()"
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this">
+                            <p:resetInput target=":dialogs:manage-product-content" />
+                        </p:commandButton>
+                        <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                         process="@this"
+                                         oncomplete="PF('deleteProductDialog').show()">
+                        </p:commandButton>
+                    </p:column>
 
-                    <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
-                    <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true"/>
-                </h:panelGrid>
-
-                <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@form" immediate="true"
-                                 update="pessoaTable" oncomplete="PF('pessoaDialog').hide()" />
-
+                </p:dataTable>
             </h:form>
-        </p:dialog>
 
-        <!-- Modal de Detalhamento -->
-        <p:dialog header="Detalhes da Pessoa" widgetVar="detailDialog" modal="true" resizable="false" id="detailDialog">
-            <h:panelGrid columns="2">
-                <h:outputLabel value="ID:" />
-                <h:outputText value="#{pessoaBean.pessoa.id}" />
+            <h:form id="dialogs">
+                <p:dialog header="Detalhes da pessoa" showEffect="fade" modal="true" widgetVar="manageProductDialog"
+                          responsive="true">
+                    <p:outputPanel id="manage-product-content" class="ui-fluid">
+                        <p:outputPanel rendered="#{not empty pessoaBean.selectedProduct}">
+                            <p:graphicImage name="images/product/#{pessoaBean.selectedProduct.image}" library="demo"
+                                            styleClass="product-image" rendered="#{not empty pessoaBean.selectedProduct.image}" />
+                            <div class="field">
+                                <p:outputLabel for="name">Name</p:outputLabel>
+                                <p:inputText id="name" value="#{pessoaBean.selectedProduct.name}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="description">Description</p:outputLabel>
+                                <p:inputTextarea id="description" value="#{pessoaBean.selectedProduct.description}" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="category">Category</p:outputLabel>
+                                <p:selectOneRadio id="category" value="#{pessoaBean.selectedProduct.category}"
+                                                  layout="responsive" columns="2">
+                                    <f:selectItem itemLabel="Accessories" itemValue="Accessories" />
+                                    <f:selectItem itemLabel="Clothing" itemValue="Clothing" />
+                                    <f:selectItem itemLabel="Electronics" itemValue="Electronics" />
+                                    <f:selectItem itemLabel="Fitness" itemValue="Fitness" />
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="formgrid grid">
+                                <div class="field col">
+                                    <p:outputLabel for="price">Price</p:outputLabel>
+                                    <p:inputNumber id="price" value="#{pessoaBean.selectedProduct.price}" symbol=" USD"
+                                                   symbolPosition="s" decimalSeparator="." thousandSeparator="," />
+                                </div>
+                                <div class="field col">
+                                    <p:outputLabel for="quantity">Quantity</p:outputLabel>
+                                    <p:spinner id="quantity" min="0" value="#{pessoaBean.selectedProduct.quantity}" />
+                                </div>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
 
-                <h:outputLabel value="Nome:" />
-                <h:outputText value="#{pessoaBean.pessoa.nome}" />
-            </h:panelGrid>
-        </p:dialog>
+                    <f:facet name="footer">
+                        <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{pessoaBean.saveProduct}"
+                                         update="manage-product-content" process="manage-product-content @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
+                                         class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
 
-        <!-- Listagem de Itens -->
-        <p:dataTable id="pessoaTable" value="#{pessoaBean.pessoas}" var="pessoa" rows="10" 
-                     paginator="true" paginatorPosition="bottom"
-                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-                     rowsPerPageTemplate="10,30,50,100,{ShowAll|'All'}">
-            <p:column headerText="ID">
-                <h:outputText value="#{pessoa.id}"/>
-            </p:column>
-            <p:column headerText="Nome">
-                <h:outputText value="#{pessoa.nome}"/>
-            </p:column>
-            <p:column headerText="Cargo">
-                <h:outputText value="#{pessoa.cargo.nome}"/>
-            </p:column>
-            <p:column headerText="Data de Nascimento">
-                <h:outputText value="#{pessoa.dataNascimento}">
-                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Cidade">
-                <h:outputText value="#{pessoa.cidade}"/>
-            </p:column>
-            <p:column headerText="País">
-                <h:outputText value="#{pessoa.pais}"/>
-            </p:column>
-            <p:column headerText="Endereço">
-                <h:outputText value="#{pessoa.endereco}"/>
-            </p:column>
-            <p:column headerText="Cep">
-                <h:outputText value="#{pessoa.cep}"/>
-            </p:column>
-            <p:column headerText="E-mail">
-                <h:outputText value="#{pessoa.email}"/>
-            </p:column>
-            <p:column headerText="Usuário">
-                <h:outputText value="#{pessoa.usuario}"/>
-            </p:column>
-            <p:column headerText="Telefone">
-                <h:outputText value="#{pessoa.telefone}"/>
-            </p:column>
-            <p:column headerText="Salário">
-                <h:outputText value="#{pessoa.pessoaSalarioConsolidado.salario}" rendered="#{not empty pessoa.pessoaSalarioConsolidado}"/>
-                <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
-            </p:column>
-            <p:column headerText="Ações">
-                <p:commandButton value="Editar" action="#{pessoaBean.prepararEdicao(pessoa)}" oncomplete="PF('pessoaDialog').show()" update="pessoaForm" />
-                <p:commandButton value="Detalhes" action="#{pessoaBean.prepararDetalhamento(pessoa)}" oncomplete="PF('detailDialog').show()" update="detailDialog" />
-                <p:commandButton value="Excluir" action="#{pessoaBean.excluir(pessoa)}" update="pessoaTable" />
-            </p:column>
-        </p:dataTable>
+                <p:confirmDialog widgetVar="deleteProductDialog" showEffect="fade" width="300"
+                                 message="Deletar a pessoa?" header="Confirmação" severity="warn">
+                    <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaBean.deleteProduct}"
+                                     process="@this" update="@form"
+                                     oncomplete="PF('deleteProductDialog').hide()" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                     onclick="PF('deleteProductDialog').hide()" />
+                </p:confirmDialog>
+
+                <p:confirmDialog global="true" showEffect="fade" width="300">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                     icon="pi pi-times" />
+                </p:confirmDialog>
+            </h:form>
+        </div>
+
     </h:body>
+
 </html>
