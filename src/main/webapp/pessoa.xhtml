@@ -25,15 +25,18 @@
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-assincrono-button" value="Calcular Salários (Assíncrono)" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalariosAssincrono()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                         <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
                                          icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem">
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
@@ -81,10 +84,12 @@
                                          oncomplete="PF('manageProductDialog').show()"
                                          styleClass="edit-button rounded-button ui-button-success" process="@this">
                             <p:resetInput target=":dialogs:manage-product-content" />
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
                         <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
                                          process="@this"
                                          oncomplete="PF('deleteProductDialog').show()">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
                     </p:column>
 
@@ -92,6 +97,13 @@
             </h:form>
 
             <h:form id="dialogs">
+                <!-- Modal de carregamento -->
+                <p:dialog widgetVar="loadingDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <h:panelGrid columns="2" style="text-align: center;">
+                        <h:outputText value="Processando, por favor aguarde..." />
+                    </h:panelGrid>
+                </p:dialog>
+                
                 <p:dialog header="Detalhes da pessoa" showEffect="fade" modal="true" widgetVar="manageProductDialog"
                           responsive="true">
                     <p:outputPanel id="manage-product-content" class="ui-fluid">

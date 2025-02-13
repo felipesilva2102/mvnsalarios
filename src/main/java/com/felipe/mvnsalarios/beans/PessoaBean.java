@@ -1,6 +1,8 @@
 package com.felipe.mvnsalarios.beans;
 
+import com.felipe.mvnsalarios.domain.Cargo;
 import com.felipe.mvnsalarios.domain.Pessoa;
+import com.felipe.mvnsalarios.service.CargoService;
 import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
 import jakarta.annotation.PostConstruct;
@@ -40,8 +42,13 @@ import org.primefaces.PrimeFaces;
 @Slf4j
 public class PessoaBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Inject
     private PessoaService pessoaService;
+
+    @Inject
+    private CargoService cargoService;
 
     @Inject
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
@@ -52,6 +59,7 @@ public class PessoaBean implements Serializable {
     private List<Pessoa> products;
     private Pessoa selectedProduct;
     private List<Pessoa> selectedProducts;
+    private List<Cargo> cargos = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -63,6 +71,13 @@ public class PessoaBean implements Serializable {
         return itens;
     }
 
+    public List<Cargo> getCargos() {
+        if (cargos.isEmpty()) {
+            cargos = cargoService.findAll();
+        }
+        return cargos;
+    }
+
     public Pessoa getPessoa() {
         return pessoa;
     }
@@ -72,16 +87,22 @@ public class PessoaBean implements Serializable {
     }
 
     public void salvar() {
-        if (pessoa.getId() == null) {
-
-        } else {
-
-        }
+        pessoaService.save(pessoa);
         pessoa = new Pessoa(); // Limpar formulário
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Operação efetuada!", null));
+
     }
 
     public void excluir(Pessoa Pessoa) {
         itens.remove(Pessoa);
+        pessoa = new Pessoa();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Pessoa removida com sucesso!",
+                        null));
+
     }
 
     public void prepararEdicao(Pessoa Pessoa) {
@@ -141,6 +162,9 @@ public class PessoaBean implements Serializable {
     public void deleteSalariosCalculados() {
         pessoaSalarioConsolidadoService.deleteAll();
         this.products = this.pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Os salários foram deletados!", null));
     }
 
     public void gerarRelatorioSalarios() {
