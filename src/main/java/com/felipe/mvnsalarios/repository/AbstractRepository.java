@@ -57,36 +57,30 @@ public abstract class AbstractRepository {
         }
         return null;
     }
-    
-    public void deleteAll() {
-    EntityManager em = JpaUtil.getEntityManager();
-    EntityTransaction tx = em.getTransaction();
-    
-    try {
-        tx.begin();
-        
-        // Criar um CriteriaBuilder
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        
-        // Criar um CriteriaDelete para a entidade PessoaSalarioConsolidado
-        CriteriaDelete<PessoaSalarioConsolidado> delete = cb.createCriteriaDelete(PessoaSalarioConsolidado.class);
-        
-        // Definir a raiz da deleção (não precisa de WHERE para deletar tudo)
-        delete.from(PessoaSalarioConsolidado.class);
-        
-        // Executar a deleção
-        em.createQuery(delete).executeUpdate();
-        
-        tx.commit();
-    } catch (Exception e) {
-        if (tx.isActive()) {
-            tx.rollback();
+
+    @SuppressWarnings("unchecked")
+    public void deleteAll(Class entityClass) {
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaDelete<PessoaSalarioConsolidado> delete = cb.createCriteriaDelete(entityClass);
+            delete.from(entityClass);
+            em.createQuery(delete).executeUpdate();
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
         }
-        e.printStackTrace();
-    } finally {
-        em.close();
     }
-}
 
     public <T> T findOne(Class<T> entityClass, Object id) {
         EntityManager em = JpaUtil.getEntityManager();

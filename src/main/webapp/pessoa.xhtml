@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>CRUD com JSF</title>
+    </h:head>
+    <h:body>
+        <h1>Gerenciamento de Itens</h1>
+
+        <!-- Botão para abrir modal de cadastro/edição -->
+<!--        <p:commandButton value="Novo Item" oncomplete="PF('itemDialog').show()" update="itemForm"/>-->
+
+        <!-- Modal de Cadastro/Edição -->
+<!--        <p:dialog header="Gerenciar Item" widgetVar="itemDialog" modal="true" resizable="false">
+            <h:form id="itemForm">
+                <h:panelGrid columns="2">
+                    <h:outputLabel for="nome" value="Nome:" />
+                    <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
+                </h:panelGrid>
+                <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" oncomplete="PF('itemDialog').hide()" update="itemTable" />
+            </h:form>
+        </p:dialog>-->
+
+        <!-- Modal de Detalhamento -->
+<!--        <p:dialog header="Detalhes do Item" widgetVar="detailDialog" modal="true" resizable="false">
+            <h:panelGrid columns="2">
+                <h:outputLabel value="ID:" />
+                <h:outputText value="#{pessoaBean.pessoa.id}" />
+
+                <h:outputLabel value="Nome:" />
+                <h:outputText value="#{pessoaBean.pessoa.nome}" />
+            </h:panelGrid>
+        </p:dialog>-->
+
+        <!-- Listagem de Itens -->
+         <p:dataTable id="itemTable" value="#{pessoaBean.itens}" var="item">
+            <p:column headerText="ID">
+                #{item.id}
+            </p:column>
+            <p:column headerText="Nome">
+                #{item.nome}
+            </p:column>
+<!--            <p:column headerText="Ações">
+                <p:commandButton value="Editar" action="#{pessoaBean.prepararEdicao(item)}" oncomplete="PF('itemDialog').show()" update="itemForm" />
+                <p:commandButton value="Detalhes" action="#{pessoaBean.prepararDetalhamento(item)}" oncomplete="PF('detailDialog').show()" update="detailDialog" />
+                <p:commandButton value="Excluir" action="#{pessoaBean.excluir(item)}" update="itemTable" />
+            </p:column>-->
+        </p:dataTable>
+    </h:body>
+</html>

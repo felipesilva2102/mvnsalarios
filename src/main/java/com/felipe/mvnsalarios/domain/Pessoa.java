@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +53,9 @@ public class Pessoa {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cargo_id")
     private Cargo cargo;
+    
+    @OneToOne(mappedBy = "pessoa", fetch = FetchType.LAZY)
+    private PessoaSalarioConsolidado pessoaSalarioConsolidado;
 
     @Column(nullable = false)
     private LocalDate dataNascimento;

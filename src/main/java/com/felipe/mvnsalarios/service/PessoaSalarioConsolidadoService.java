@@ -39,7 +39,7 @@ public class PessoaSalarioConsolidadoService {
     }
 
     public void calcularSalariosService() {
-        pessoaSalarioConsolidadoRepository.deleteAll();
+        pessoaSalarioConsolidadoRepository.deleteAll(PessoaSalarioConsolidado.class);
         List<Pessoa> pessoas = pessoaService.findAll();
         int qtdPessoas = pessoas.size();
         int contador = 1;
@@ -60,7 +60,7 @@ public class PessoaSalarioConsolidadoService {
             pessoaSalarioConsolidado.setNomePessoa(pessoa.getNome());
             pessoaSalarioConsolidado.setPessoa(pessoa);
             pessoaSalarioConsolidado.setSalario(salarioCalculado);
-            log.debug("... " + contador + "/" + qtdPessoas + " - salário calculado de " + pessoa.getNome() + ": " + salarioCalculado);
+            log.info("... " + contador + "/" + qtdPessoas + " - salário calculado de " + pessoa.getNome() + ": " + salarioCalculado);
             save(pessoaSalarioConsolidado);
             contador++;
         }
