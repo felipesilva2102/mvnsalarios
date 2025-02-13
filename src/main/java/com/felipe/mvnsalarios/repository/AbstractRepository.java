@@ -17,25 +17,11 @@ public abstract class AbstractRepository {
 
     public <T> List<T> findAll(Class<T> entityClass) {
         EntityManager em = JpaUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try {
-            tx.begin();
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<T> cq = cb.createQuery(entityClass);
-            Root<T> root = cq.from(entityClass);
-            cq.select(root);
-
-            return em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        return null;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        Root<T> root = cq.from(entityClass);
+        cq.select(root);
+        return em.createQuery(cq).getResultList();
     }
 
     public <T> T save(T entity) {

@@ -35,7 +35,7 @@
                         </p:commandButton>
                         <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
                                          icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         styleClass="ui-button-danger" update="dt-products messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                     </p:toolbarGroup>
@@ -74,6 +74,14 @@
                         <h:outputText value="#{pessoa.cidade}" />
                     </p:column>
 
+                    <p:column headerText="Telefone" sortBy="#{pessoa.telefone}" filterBy="#{pessoa.telefone}">
+                        <h:outputText value="#{pessoa.telefone}" />
+                    </p:column>
+
+                    <p:column headerText="Cargo" sortBy="#{pessoa.cargo.nome}" filterBy="#{pessoa.cargo.nome}">
+                        <h:outputText value="#{pessoa.cargo.nome}" />
+                    </p:column>
+
                     <p:column headerText="Salário" sortBy="#{pessoa.pessoaSalarioConsolidado.salario}">
                         <h:outputText value="#{pessoa.pessoaSalarioConsolidado.salario}" rendered="#{not empty pessoa.pessoaSalarioConsolidado}"/>
                         <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
@@ -86,7 +94,7 @@
                             <p:resetInput target=":dialogs:manage-product-content" />
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
-                        <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                        <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash"
                                          process="@this"
                                          oncomplete="PF('deleteProductDialog').show()">
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
@@ -103,7 +111,7 @@
                         <h:outputText value="Processando, por favor aguarde..." />
                     </h:panelGrid>
                 </p:dialog>
-                
+
                 <p:dialog header="Detalhes da pessoa" showEffect="fade" modal="true" widgetVar="manageProductDialog"
                           responsive="true">
                     <p:outputPanel id="manage-product-content" class="ui-fluid">
