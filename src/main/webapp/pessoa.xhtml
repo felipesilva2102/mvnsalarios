@@ -2,30 +2,63 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
     <h:head>
-        <title>CRUD com JSF</title>
+        <title>Listagem de pessoas</title>
     </h:head>
     <h:body>
-        <h1>Gerenciamento de Itens</h1>
+        <h1>Listagem de pessoas</h1>
 
         <!-- Botão para abrir modal de cadastro/edição -->
-<!--        <p:commandButton value="Novo Item" oncomplete="PF('itemDialog').show()" update="itemForm"/>-->
+        <p:commandButton value="Cadastrar pessoa" oncomplete="PF('pessoaDialog').show()" update="pessoaForm" style="margin: 5px"/>
+        <p:commandButton value="Calcular/recalcular salários" action="#{pessoaBean.calcularSalarios()}" ajax="true" update="pessoaTable" process="@this" style="margin: 5px"/>
 
         <!-- Modal de Cadastro/Edição -->
-<!--        <p:dialog header="Gerenciar Item" widgetVar="itemDialog" modal="true" resizable="false">
-            <h:form id="itemForm">
+        <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog"> 
+            <h:form id="pessoaForm">
                 <h:panelGrid columns="2">
                     <h:outputLabel for="nome" value="Nome:" />
                     <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
+
+                    <h:outputLabel for="cidade" value="Cidade:" />
+                    <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true"/>
+
+                    <h:outputLabel for="email" value="Email:" />
+                    <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true"/>
+
+                    <h:outputLabel for="cep" value="CEP:" />
+                    <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true"/>
+
+                    <h:outputLabel for="endereco" value="Endereço:" />
+                    <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true"/>
+
+                    <h:outputLabel for="usuario" value="Usuário:" />
+                    <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true"/>
+
+                    <h:outputLabel for="telefone" value="Telefone:" />
+                    <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true"/>
+
+                    <h:outputLabel for="pais" value="País:" />
+                    <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true"/>
+
+                    <h:outputLabel for="cargo" value="Cargo:" />
+                    <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" immediate="true">
+                        <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
+                    <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true"/>
                 </h:panelGrid>
-                <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" oncomplete="PF('itemDialog').hide()" update="itemTable" />
+
+                <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@form" immediate="true"
+                                 update="pessoaTable" oncomplete="PF('pessoaDialog').hide()" />
+
             </h:form>
-        </p:dialog>-->
+        </p:dialog>
 
         <!-- Modal de Detalhamento -->
-<!--        <p:dialog header="Detalhes do Item" widgetVar="detailDialog" modal="true" resizable="false">
+        <p:dialog header="Detalhes da Pessoa" widgetVar="detailDialog" modal="true" resizable="false" id="detailDialog">
             <h:panelGrid columns="2">
                 <h:outputLabel value="ID:" />
                 <h:outputText value="#{pessoaBean.pessoa.id}" />
@@ -33,21 +66,58 @@
                 <h:outputLabel value="Nome:" />
                 <h:outputText value="#{pessoaBean.pessoa.nome}" />
             </h:panelGrid>
-        </p:dialog>-->
+        </p:dialog>
 
         <!-- Listagem de Itens -->
-         <p:dataTable id="itemTable" value="#{pessoaBean.itens}" var="item">
+        <p:dataTable id="pessoaTable" value="#{pessoaBean.pessoas}" var="pessoa" rows="10" 
+                     paginator="true" paginatorPosition="bottom"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                     rowsPerPageTemplate="10,30,50,100,{ShowAll|'All'}">
             <p:column headerText="ID">
-                #{item.id}
+                <h:outputText value="#{pessoa.id}"/>
             </p:column>
             <p:column headerText="Nome">
-                #{item.nome}
+                <h:outputText value="#{pessoa.nome}"/>
             </p:column>
-<!--            <p:column headerText="Ações">
-                <p:commandButton value="Editar" action="#{pessoaBean.prepararEdicao(item)}" oncomplete="PF('itemDialog').show()" update="itemForm" />
-                <p:commandButton value="Detalhes" action="#{pessoaBean.prepararDetalhamento(item)}" oncomplete="PF('detailDialog').show()" update="detailDialog" />
-                <p:commandButton value="Excluir" action="#{pessoaBean.excluir(item)}" update="itemTable" />
-            </p:column>-->
+            <p:column headerText="Cargo">
+                <h:outputText value="#{pessoa.cargo.nome}"/>
+            </p:column>
+            <p:column headerText="Data de Nascimento">
+                <h:outputText value="#{pessoa.dataNascimento}">
+                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Cidade">
+                <h:outputText value="#{pessoa.cidade}"/>
+            </p:column>
+            <p:column headerText="País">
+                <h:outputText value="#{pessoa.pais}"/>
+            </p:column>
+            <p:column headerText="Endereço">
+                <h:outputText value="#{pessoa.endereco}"/>
+            </p:column>
+            <p:column headerText="Cep">
+                <h:outputText value="#{pessoa.cep}"/>
+            </p:column>
+            <p:column headerText="E-mail">
+                <h:outputText value="#{pessoa.email}"/>
+            </p:column>
+            <p:column headerText="Usuário">
+                <h:outputText value="#{pessoa.usuario}"/>
+            </p:column>
+            <p:column headerText="Telefone">
+                <h:outputText value="#{pessoa.telefone}"/>
+            </p:column>
+            <p:column headerText="Salário">
+                <h:outputText value="#{pessoa.pessoaSalarioConsolidado.salario}" rendered="#{not empty pessoa.pessoaSalarioConsolidado}"/>
+                <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
+            </p:column>
+            <p:column headerText="Ações">
+                <p:commandButton value="Editar" action="#{pessoaBean.prepararEdicao(pessoa)}" oncomplete="PF('pessoaDialog').show()" update="pessoaForm" />
+                <p:commandButton value="Detalhes" action="#{pessoaBean.prepararDetalhamento(pessoa)}" oncomplete="PF('detailDialog').show()" update="detailDialog" />
+                <p:commandButton value="Excluir" action="#{pessoaBean.excluir(pessoa)}" update="pessoaTable" />
+            </p:column>
         </p:dataTable>
     </h:body>
 </html>

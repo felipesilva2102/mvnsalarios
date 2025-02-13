@@ -5,6 +5,7 @@ import com.felipe.mvnsalarios.repository.CargoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.util.List;
 
 @ApplicationScoped
 @Transactional
@@ -15,6 +16,10 @@ public class CargoService {
 
     public Cargo save(Cargo cargo) {
         return cargoRepository.save(cargo);
+    }
+    
+    public List<Cargo> findAll() {
+        return cargoRepository.findAll(Cargo.class);
     }
 
 }

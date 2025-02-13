@@ -12,6 +12,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
@@ -38,7 +41,7 @@ public class PessoaSalarioConsolidadoService {
         return pessoaSalarioConsolidadoRepository.save(pessoaSalarioConsolidado);
     }
 
-    public void calcularSalariosService() {
+    public void calcularSalarios() {
         pessoaSalarioConsolidadoRepository.deleteAll(PessoaSalarioConsolidado.class);
         List<Pessoa> pessoas = pessoaService.findAll();
         int qtdPessoas = pessoas.size();

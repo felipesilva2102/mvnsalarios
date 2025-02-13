@@ -13,6 +13,6 @@ public class CalcularSalariosBean {
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
 
     public void calcularSalarios() {
-        pessoaSalarioConsolidadoService.calcularSalariosService();
+        pessoaSalarioConsolidadoService.calcularSalarios();
     }
 }
