@@ -2,7 +2,6 @@ package com.felipe.mvnsalarios.beans;
 
 import com.felipe.mvnsalarios.domain.Cargo;
 import com.felipe.mvnsalarios.domain.Pessoa;
-import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.service.CargoService;
 import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.util.IOUtils;
 
 @Named
-//@RequestScoped
 @ViewScoped
 @Getter
 @Setter
@@ -58,6 +57,8 @@ public class PessoaBean implements Serializable {
     private Pessoa selectedProduct;
     private List<Pessoa> selectedProducts;
     private List<Cargo> cargos = new ArrayList<>();
+
+    private Future<String> future;
 
     @PostConstruct
     public void init() {
@@ -130,12 +131,11 @@ public class PessoaBean implements Serializable {
     }
 
     public void calcularSalariosAssincrono() {
-        pessoaSalarioConsolidadoService.calcularSalariosAssincronos();
-        this.products = this.pessoaService.findAll();
+        future = pessoaSalarioConsolidadoService.calcularSalariosAssincrono();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Os salários foram atualizados!",
-                        "O cálculo foi concluído com sucesso."));
+                        "Os salários estão sendo calculados!",
+                        "Os salários estão sendo calculados!"));
 
     }
 
@@ -146,6 +146,10 @@ public class PessoaBean implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Os salários foram deletados!", null));
     }
+    
+    public void refresh(){
+        this.products = this.pessoaService.findAll();
+    }
 
     public void gerarRelatorioSalarios() {
         try {
@@ -154,18 +158,9 @@ public class PessoaBean implements Serializable {
             if (reportStreamJrxml == null) {
                 throw new RuntimeException("Arquivo do relatório não encontrado!");
             }
-            
-            List<PessoaSalarioConsolidado> pessoaSalarioConsolidados = pessoaSalarioConsolidadoService.findAll();
-            
-            if(pessoaSalarioConsolidados.isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Necessário clicar no botão 'Calcular Salários' ou 'Calcular Salários (Assíncrono)' para calcular salários e poder criar PDF!", null));
-                throw new Exception("Pessoas Salarios Consolidados é nula!");
-            }
 
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pessoaSalarioConsolidados);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
 
             Map<String, Object> parametros = new HashMap<>();
 

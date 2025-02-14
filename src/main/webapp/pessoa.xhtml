@@ -32,6 +32,11 @@
                                          styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
+                        <p:commandButton id="refresh-button" value="Atualizar página" 
+                                         icon="pi pi-refresh" actionListener="#{pessoaBean.refresh()}"
+                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                        </p:commandButton>
                         <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
                                          icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
                                          styleClass="ui-button-danger" update="dt-products messages" style="margin-right: .5rem"
@@ -133,7 +138,7 @@
                         </p:selectOneMenu>
                         <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
                         <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
-                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@this pais" update=":form:dt-products"
+                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@form" update=":form:dt-products"
                                          style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
                         <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
                     </h:panelGrid>
