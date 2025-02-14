@@ -2,9 +2,7 @@ package com.felipe.mvnsalarios.beans;
 
 import com.felipe.mvnsalarios.domain.Cargo;
 import com.felipe.mvnsalarios.domain.Pessoa;
-import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.service.CargoService;
-import com.felipe.mvnsalarios.service.JasperReportService;
 import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
 import jakarta.annotation.PostConstruct;
@@ -13,8 +11,9 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,16 +24,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.export.ExporterInput;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.primefaces.PrimeFaces;
+import org.primefaces.util.IOUtils;
 
 @Named
 //@RequestScoped
@@ -54,18 +50,15 @@ public class PessoaBean implements Serializable {
 
     @Inject
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
-    
-    @Inject
-    private JasperReportService jasperReportService;
 
-    private Pessoa pessoa = new Pessoa();    
+    private Pessoa pessoa = new Pessoa();
     private boolean visualizationMode;
 
     private List<Pessoa> products;
     private Pessoa selectedProduct;
     private List<Pessoa> selectedProducts;
     private List<Cargo> cargos = new ArrayList<>();
-    
+
     @PostConstruct
     public void init() {
         this.products = this.pessoaService.findAll();
@@ -113,19 +106,19 @@ public class PessoaBean implements Serializable {
         this.pessoa = Pessoa;
     }
 
-    public void detailPessoa(){
+    public void detailPessoa() {
         visualizationMode = true;
     }
-    
-    public void insertUpdatePessoa(){
+
+    public void insertUpdatePessoa() {
         visualizationMode = false;
     }
-    
-    public void inicializarPessoa(){
+
+    public void inicializarPessoa() {
         insertUpdatePessoa();
         pessoa = new Pessoa();
     }
-    
+
     public void openNew() {
 //        this.selectedProduct = new Product();
     }
@@ -181,7 +174,34 @@ public class PessoaBean implements Serializable {
     }
 
     public void gerarRelatorioSalarios() {
-        List<PessoaSalarioConsolidado> pessoaSalarioConsolidados = pessoaSalarioConsolidadoService.findAll();
-        jasperReportService.gerarRelatorio(pessoaSalarioConsolidados);
+        try {
+            InputStream reportStreamJrxml = getClass().getResourceAsStream("/relatorios/relatorioSalarios.jrxml");
+
+            if (reportStreamJrxml == null) {
+                throw new RuntimeException("Arquivo do relatório não encontrado!");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
+
+            Map<String, Object> parametros = new HashMap<>();
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, byteArrayOutputStream);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+            byte[] conteudoRelatorioVistoria = IOUtils.toByteArray(byteArrayInputStream);
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename=relatorioSalarios.pdf");
+            response.getOutputStream().write(conteudoRelatorioVistoria);
+            response.getOutputStream().flush();
+            response.getOutputStream().close();
+            FacesContext.getCurrentInstance().responseComplete();
+        } catch (Exception e) {
+            log.error("Erro na geração do relatório de salários", e);
+        }
     }
 }

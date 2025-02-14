@@ -5,6 +5,7 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
+	<field name="bean" class="com.felipe.mvnsalarios.domain.Pessoa"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -26,12 +27,12 @@
 	</columnHeader>
 	<detail>
 		<band height="125" splitType="Stretch">
-			<staticText>
-				<reportElement x="218" y="21" width="222" height="30" uuid="ba91f337-8ed8-4949-930a-c0eaac3843fe">
+			<textField>
+				<reportElement x="218" y="21" width="222" height="30" uuid="1dd82695-99f6-4eb7-b546-117fa1e282db">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6eda5d58-a3d3-4352-a0f9-ef4633c8717e"/>
 				</reportElement>
-				<text><![CDATA[teste]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$F{bean}.getNome()]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>
