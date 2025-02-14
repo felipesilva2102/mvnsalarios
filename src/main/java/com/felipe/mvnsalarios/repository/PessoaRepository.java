@@ -1,12 +1,10 @@
 package com.felipe.mvnsalarios.repository;
 
 import com.felipe.mvnsalarios.domain.Pessoa;
-import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
@@ -20,7 +18,8 @@ public class PessoaRepository extends GenericRepository<Pessoa, Integer> {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pessoa> criteriaQuery = criteriaBuilder.createQuery(entityClass);
         Root<Pessoa> root = criteriaQuery.from(entityClass);
-        Join<Pessoa, PessoaSalarioConsolidado> clienteJoin = root.join("pessoaSalarioConsolidado", JoinType.LEFT);
+        root.fetch("pessoaSalarioConsolidado", JoinType.LEFT);
+//        Join<Pessoa, PessoaSalarioConsolidado> clienteJoin = root.join("pessoaSalarioConsolidado", JoinType.LEFT);
         criteriaQuery.select(root).orderBy(criteriaBuilder.asc(root.get("id")));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
