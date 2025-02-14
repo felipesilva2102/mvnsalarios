@@ -134,8 +134,8 @@ public class PessoaBean implements Serializable {
         this.products = this.pessoaService.findAll();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Os salários foram atualizados!",
-                        "O cálculo foi concluído com sucesso."));
+                        "Os salários ainda estão sendo calculados!",
+                        "Atualize a página no botão 'Atualizar página' após uns 30s."));
 
     }
 
@@ -147,6 +147,14 @@ public class PessoaBean implements Serializable {
                         "Os salários foram deletados!", null));
     }
 
+    public void refresh() {
+        this.products = pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Página atualizada",
+                        null));
+    }
+
     public void gerarRelatorioSalarios() {
         try {
             InputStream reportStreamJrxml = getClass().getResourceAsStream("/relatorios/relatorioSalarios.jrxml");
@@ -154,19 +162,18 @@ public class PessoaBean implements Serializable {
             if (reportStreamJrxml == null) {
                 throw new RuntimeException("Arquivo do relatório não encontrado!");
             }
-            
-            
+
             List<PessoaSalarioConsolidado> pessoaSalarioConsolidados = pessoaSalarioConsolidadoService.findAll();
-            
-            if(pessoaSalarioConsolidados.isEmpty()) {
+
+            if (pessoaSalarioConsolidados.isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Necessário clicar no botão 'Calcular Salários' ou 'Calcular Salários (Assíncrono)' para calcular salários e poder criar PDF!", null));
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Necessário clicar no botão 'Calcular Salários' ou 'Calcular Salários (Assíncrono)' para calcular salários e poder criar PDF!", null));
             }
-            
+
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
-            
+
             Map<String, Object> parametros = new HashMap<>();
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);

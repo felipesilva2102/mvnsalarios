@@ -57,6 +57,11 @@
             <version>6.21.4</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.5.Final</version> 
+        </dependency>
     </dependencies>
     
     <build>
@@ -84,6 +89,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
+            </plugin>
+            <!-- Execute 'mvn clean package wildfly:dev' to run the application. -->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>5.0.1.Final</version>
+                <configuration>
+                    <version>${wildfly.version}</version>
+                    <server-config>standalone.xml</server-config>
+                </configuration>
             </plugin>
         </plugins>
     </build>
