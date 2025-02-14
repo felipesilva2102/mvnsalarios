@@ -1,8 +1,8 @@
 <!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498 -->
 <jasperReport name="relatorioSalarios" language="java" columnCount="1" pageWidth="595" pageHeight="842" whenNoDataType="NoPages" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20">
-    <parameter name="nome" class="java.lang.String"/>
-    <parameter name="cargo.nome" class="java.lang.String"/>
-    <field name="/pessoaSalarioConsolidado.salario" class="java.math.BigDecimal"/>
+    <field name="nome" class="java.lang.String"/>
+    <field name="cargo" class="com.felipe.mvnsalarios.domain.Cargo"/>
+    <field name="pessoaSalarioConsolidado" class="com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado"/>
 
     <title>
         <band height="50">
@@ -50,12 +50,12 @@
             </textField>
             <textField>
                 <reportElement x="200" y="0" width="200" height="20"/>
-                <textFieldExpression><![CDATA[$F{cargo.nome}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{cargo}.getNome()]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="400" y="0" width="135" height="20"/>
                 <textElement textAlignment="Right"/>
-                <textFieldExpression><![CDATA[$F{pessoaSalarioConsolidado.salario} == null ? "0.00" : String.format("%.2f", $F{pessoaSalarioConsolidado.salario})]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{pessoaSalarioConsolidado} == null ? "0.00" : String.format("%.2f", $F{pessoaSalarioConsolidado}.getSalario())]]></textFieldExpression>
             </textField>
         </band>
     </detail>

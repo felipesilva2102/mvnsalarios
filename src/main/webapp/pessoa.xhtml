@@ -19,7 +19,7 @@
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="Novo" icon="pi pi-plus" process="@this" action="#{pessoaBean.inicializarPessoa()}"
-                                         update=":dialogs:pessoaDialog" oncomplete="PF('pessoaDialog').show()"
+                                         update=":dialogs:pessoaDialog messages" oncomplete="PF('pessoaDialog').show()"
                                          styleClass="ui-button-success" style="margin-right: .5rem">
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
