@@ -2,6 +2,7 @@ package com.felipe.mvnsalarios.beans;
 
 import com.felipe.mvnsalarios.domain.Cargo;
 import com.felipe.mvnsalarios.domain.Pessoa;
+import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.service.CargoService;
 import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
@@ -29,7 +30,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.primefaces.PrimeFaces;
 import org.primefaces.util.IOUtils;
 
 @Named
@@ -119,32 +119,6 @@ public class PessoaBean implements Serializable {
         pessoa = new Pessoa();
     }
 
-    public void openNew() {
-//        this.selectedProduct = new Product();
-    }
-
-    public String getDeleteButtonMessage() {
-//        if (hasSelectedProducts()) {
-//            int size = this.selectedProducts.size();
-//            return size > 1 ? size + " products selected" : "1 product selected";
-//        }
-
-        return "Delete";
-    }
-
-    public void deleteSelectedProducts() {
-//        this.products.removeAll(this.selectedProducts);
-//        this.selectedProducts = null;
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Products Removed"));
-        PrimeFaces.current().ajax().update("form:messages", "form:dt-products");
-        PrimeFaces.current().executeScript("PF('dtProducts').clearFilters()");
-    }
-
-    public boolean hasSelectedProducts() {
-//        return this.selectedProducts != null && !this.selectedProducts.isEmpty();
-        return false;
-    }
-
     public void calcularSalarios() {
         pessoaSalarioConsolidadoService.calcularSalarios();
         this.products = this.pessoaService.findAll();
@@ -180,9 +154,18 @@ public class PessoaBean implements Serializable {
             if (reportStreamJrxml == null) {
                 throw new RuntimeException("Arquivo do relatório não encontrado!");
             }
+            
+            List<PessoaSalarioConsolidado> pessoaSalarioConsolidados = pessoaSalarioConsolidadoService.findAll();
+            
+            if(pessoaSalarioConsolidados.isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Necessário clicar no botão 'Calcular Salários' ou 'Calcular Salários (Assíncrono)' para calcular salários e poder criar PDF!", null));
+                throw new Exception("Pessoas Salarios Consolidados é nula!");
+            }
 
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pessoaSalarioConsolidados);
 
             Map<String, Object> parametros = new HashMap<>();
 

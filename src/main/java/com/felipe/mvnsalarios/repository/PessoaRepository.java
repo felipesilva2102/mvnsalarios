@@ -21,7 +21,7 @@ public class PessoaRepository extends GenericRepository<Pessoa, Integer> {
         CriteriaQuery<Pessoa> criteriaQuery = criteriaBuilder.createQuery(entityClass);
         Root<Pessoa> root = criteriaQuery.from(entityClass);
         Join<Pessoa, PessoaSalarioConsolidado> clienteJoin = root.join("pessoaSalarioConsolidado", JoinType.LEFT);
-        criteriaQuery.select(root);
+        criteriaQuery.select(root).orderBy(criteriaBuilder.asc(root.get("id")));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
