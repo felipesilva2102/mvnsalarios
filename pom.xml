@@ -31,7 +31,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.6.5.Final</version> 
         </dependency>
@@ -56,11 +56,6 @@
             <artifactId>jasperreports</artifactId>
             <version>6.21.4</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.6.5.Final</version> 
         </dependency>
     </dependencies>
     
