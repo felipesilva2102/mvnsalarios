@@ -18,10 +18,9 @@
 
                 <p:toolbar>
                     <p:toolbarGroup>
-                        <p:commandButton value="Novo" icon="pi pi-plus" ajax="true" process="@this"
-                                         update=":dialogs:manage-product-content" oncomplete="PF('pessoaDialog').show()"
+                        <p:commandButton value="Novo" icon="pi pi-plus" process="@this" action="#{pessoaBean.inicializarPessoa()}"
+                                         update=":dialogs:pessoaDialog" oncomplete="PF('pessoaDialog').show()"
                                          styleClass="ui-button-success" style="margin-right: .5rem">
-                            <p:resetInput target=":dialogs:pessoaDialog" />
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
@@ -47,7 +46,7 @@
                     </p:toolbarGroup>
                 </p:toolbar>
 
-                <p:dataTable id="dt-products" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.products}" selectionMode="multiple" 
+                <p:dataTable id="dt-products" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.products}"
                              reflow="true" styleClass="products-table" selection="#{pessoaBean.selectedProducts}"
                              rowKey="#{pessoa.id}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom">
                     <f:facet name="header">
@@ -89,12 +88,16 @@
 
                     <p:column exportable="false" ariaHeaderText="Actions">
                         <p:commandButton icon="pi pi-pencil" update=":dialogs:pessoaDialog"
-                                         oncomplete="PF('pessoaDialog').show()"
+                                         oncomplete="PF('pessoaDialog').show()" action="#{pessoaBean.insertUpdatePessoa()}"
                                          styleClass="edit-button rounded-button ui-button-success" process="@this">
-                            <p:resetInput target=":dialogs:pessoaDialog" />
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
-                        <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash"
+                        <p:commandButton styleClass="ui-button-info rounded-button" icon="pi pi-info-circle"
+                                         process="@this" action="#{pessoaBean.detailPessoa()}"
+                                         oncomplete="PF('pessoaDialog').show()" update=":dialogs:pessoaDialog">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
+                        <p:commandButton styleClass="ui-button-danger rounded-button" icon="pi pi-trash"
                                          process="@this"
                                          oncomplete="PF('deletePessoa').show()">
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
@@ -107,33 +110,33 @@
             <h:form id="dialogs">
                 <!-- Modal de Cadastro/Edição -->
                 <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog"> 
-                        <h:panelGrid columns="2">
-                            <h:outputLabel for="nome" value="Nome:" />
-                            <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
-                            <h:outputLabel for="cidade" value="Cidade:" />
-                            <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true"/>
-                            <h:outputLabel for="email" value="Email:" />
-                            <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true"/>
-                            <h:outputLabel for="cep" value="CEP:" />
-                            <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true"/>
-                            <h:outputLabel for="endereco" value="Endereço:" />
-                            <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true"/>
-                            <h:outputLabel for="usuario" value="Usuário:" />
-                            <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true"/>
-                            <h:outputLabel for="telefone" value="Telefone:" />
-                            <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true"/>
-                            <h:outputLabel for="pais" value="País:" />
-                            <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true"/>
-                            <h:outputLabel for="cargo" value="Cargo:" />
-                            <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" immediate="true">
-                                <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
-                            </p:selectOneMenu>
-                            <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
-                            <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true"/>
-                        </h:panelGrid>
-                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@this" update=":form:dt-products"
-                                         style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" />
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="nome" value="Nome:" />
+                        <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cidade" value="Cidade:" />
+                        <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="email" value="Email:" />
+                        <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cep" value="CEP:" />
+                        <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="endereco" value="Endereço:" />
+                        <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="usuario" value="Usuário:" />
+                        <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="telefone" value="Telefone:" />
+                        <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="pais" value="País:" />
+                        <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cargo" value="Cargo:" />
+                        <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" disabled="#{pessoaBean.visualizationMode}">
+                            <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
+                        <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
+                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@this pais" update=":form:dt-products"
+                                         style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
                         <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
+                    </h:panelGrid>
                 </p:dialog>
 
                 <!-- Modal de carregamento -->

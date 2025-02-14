@@ -22,4 +22,8 @@ public class CargoService {
         return cargoRepository.findAll(Cargo.class);
     }
 
+    public Object findOne(Integer id) {
+        return cargoRepository.findOne(Cargo.class, id);
+    }
+
 }

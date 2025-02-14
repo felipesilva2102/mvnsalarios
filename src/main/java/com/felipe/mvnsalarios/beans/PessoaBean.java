@@ -60,6 +60,8 @@ public class PessoaBean implements Serializable {
     private List<Pessoa> selectedProducts;
     private List<Cargo> cargos = new ArrayList<>();
 
+    private boolean visualizationMode;
+    
     @PostConstruct
     public void init() {
         this.products = this.pessoaService.findAll();
@@ -107,6 +109,19 @@ public class PessoaBean implements Serializable {
         this.pessoa = Pessoa;
     }
 
+    public void detailPessoa(){
+        visualizationMode = true;
+    }
+    
+    public void insertUpdatePessoa(){
+        visualizationMode = false;
+    }
+    
+    public void inicializarPessoa(){
+        insertUpdatePessoa();
+        pessoa = new Pessoa();
+    }
+    
     public void openNew() {
 //        this.selectedProduct = new Product();
     }
