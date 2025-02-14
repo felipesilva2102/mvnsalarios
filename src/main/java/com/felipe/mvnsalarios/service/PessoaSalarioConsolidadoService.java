@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,8 +43,11 @@ public class PessoaSalarioConsolidadoService {
     public void calcularSalarios() {
         pessoaSalarioConsolidadoRepository.deleteAll(PessoaSalarioConsolidado.class);
         List<Pessoa> pessoas = pessoaService.findAll();
+        
         int qtdPessoas = pessoas.size();
         int contador = 1;
+        List<PessoaSalarioConsolidado> salarios = new ArrayList<>();
+        
         for (Pessoa pessoa : pessoas) {
             Cargo cargo = pessoa.getCargo();
             List<CargoVencimentos> cargoVencimentos = cargoVencimentosService.findByCargo(cargo);
@@ -62,9 +66,11 @@ public class PessoaSalarioConsolidadoService {
             pessoaSalarioConsolidado.setPessoa(pessoa);
             pessoaSalarioConsolidado.setSalario(salarioCalculado);
             log.info("... " + contador + "/" + qtdPessoas + " - salário calculado de " + pessoa.getNome() + ": " + salarioCalculado);
-            save(pessoaSalarioConsolidado);
+            salarios.add(pessoaSalarioConsolidado);
             contador++;
         }
+        
+        pessoaSalarioConsolidadoRepository.saveAll(salarios);
     }
     
     @Asynchronous
@@ -103,6 +109,10 @@ public class PessoaSalarioConsolidadoService {
     
     public void deleteAll(){
         pessoaSalarioConsolidadoRepository.deleteAll(PessoaSalarioConsolidado.class);
+    }
+    
+    public List<PessoaSalarioConsolidado> findAll(){
+        return pessoaSalarioConsolidadoRepository.findAll(PessoaSalarioConsolidado.class);
     }
 
 }

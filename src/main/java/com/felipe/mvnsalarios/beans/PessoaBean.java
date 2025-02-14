@@ -2,7 +2,9 @@ package com.felipe.mvnsalarios.beans;
 
 import com.felipe.mvnsalarios.domain.Cargo;
 import com.felipe.mvnsalarios.domain.Pessoa;
+import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.service.CargoService;
+import com.felipe.mvnsalarios.service.JasperReportService;
 import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
 import jakarta.annotation.PostConstruct;
@@ -52,15 +54,17 @@ public class PessoaBean implements Serializable {
 
     @Inject
     private PessoaSalarioConsolidadoService pessoaSalarioConsolidadoService;
+    
+    @Inject
+    private JasperReportService jasperReportService;
 
-    private Pessoa pessoa = new Pessoa();
+    private Pessoa pessoa = new Pessoa();    
+    private boolean visualizationMode;
 
     private List<Pessoa> products;
     private Pessoa selectedProduct;
     private List<Pessoa> selectedProducts;
     private List<Cargo> cargos = new ArrayList<>();
-
-    private boolean visualizationMode;
     
     @PostConstruct
     public void init() {
@@ -93,7 +97,7 @@ public class PessoaBean implements Serializable {
     }
 
     public void excluir(Pessoa pessoa) {
-        pessoaService.removeOne(pessoa);
+        pessoaService.deleteById(pessoa);
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Pessoa removida com sucesso!",
@@ -177,43 +181,7 @@ public class PessoaBean implements Serializable {
     }
 
     public void gerarRelatorioSalarios() {
-        try {
-            InputStream reportStreamJrxml = getClass().getResourceAsStream("/relatorios/relatorioSalarios.jrxml");
-
-            if (reportStreamJrxml == null) {
-                throw new RuntimeException("Arquivo do relatório não encontrado!");
-            }
-
-            JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
-
-            Map<String, Object> parametros = new HashMap<>();
-//            parametros.put("TITULO", "Relatório de Pessoas");
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
-
-            // Exportar para PDF
-            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "inline; filename=relatorio.pdf");
-
-            ServletOutputStream outputStream = response.getOutputStream();
-            JRPdfExporter exporter = new JRPdfExporter();
-            ExporterInput exporterInput = new SimpleExporterInput(jasperPrint);
-            exporter.setExporterInput(exporterInput);
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-            // Configurações do exportador (se necessário)
-            SimplePdfExporterConfiguration pdfConfig = new SimplePdfExporterConfiguration();
-            exporter.setConfiguration(pdfConfig);
-
-            // Exporta o relatório
-            exporter.exportReport();
-
-            // Finaliza a resposta
-            FacesContext.getCurrentInstance().responseComplete();
-        } catch (Exception e) {
-            log.error("Erro na geração do relatório de salários", e);
-        }
+        List<PessoaSalarioConsolidado> pessoaSalarioConsolidados = pessoaSalarioConsolidadoService.findAll();
+        jasperReportService.gerarRelatorio(pessoaSalarioConsolidados);
     }
 }

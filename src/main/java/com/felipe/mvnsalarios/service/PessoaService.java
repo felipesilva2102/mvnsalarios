@@ -22,8 +22,9 @@ public class PessoaService {
         return pessoaRepository.findAll(Pessoa.class);
     }
 
-    public void removeOne(Pessoa pessoa) {
-        pessoaRepository.removeOne(Pessoa.class, pessoa.getId());
+    public void deleteById(Pessoa pessoa) {
+//        pessoaRepository.removeOne(Pessoa.class, pessoa.getId());
+        pessoaRepository.deleteById(Pessoa.class, pessoa.getId());
     }
 
 }
