@@ -1,7 +1,6 @@
 package com.felipe.mvnsalarios.repository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
@@ -41,9 +40,16 @@ public abstract class GenericRepository<T, ID> {
     }
 
     public void deleteById(Class<T> entityClass, ID id) {
-        EntityManager entityManager = JpaUtil.getEntityManager();
-        T entity = findById(entityClass, id).orElseThrow(() -> new EntityNotFoundException("Entity not found"));
-        entityManager.remove(entity);
+        try (EntityManager entityManager = JpaUtil.getEntityManager()) {
+            EntityTransaction tx = entityManager.getTransaction();
+            tx.begin();
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaDelete<T> delete = cb.createCriteriaDelete(entityClass);
+            Root<T> root = delete.from(entityClass);
+            delete.where(cb.equal(root.get("id"), id));
+            entityManager.createQuery(delete).executeUpdate();
+            tx.commit();
+        }
     }
 
     public T save(T entity) {
@@ -51,12 +57,8 @@ public abstract class GenericRepository<T, ID> {
         try (EntityManager entityManager = JpaUtil.getEntityManager()) {
             EntityTransaction tx = entityManager.getTransaction();
             tx.begin();
-            if (entityManager.contains(entity)) {
-                entityBD = entityManager.merge(entity); // Atualiza a entidade se já existe
-            } else {
-                entityManager.persist(entity); // Persiste a entidade se não existir
-                entityBD = entity;
-            }
+            entityManager.persist(entity);
+            entityBD = entity;
             tx.commit();
         }
         return entityBD;

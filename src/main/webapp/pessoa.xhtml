@@ -24,22 +24,22 @@
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                         <p:commandButton id="calcular-salarios-assincrono-button" value="Calcular Salários (Assíncrono)" 
                                          icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalariosAssincrono()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                         <p:commandButton id="refresh-button" value="Atualizar página" 
                                          icon="pi pi-refresh" actionListener="#{pessoaBean.refresh()}"
-                                         styleClass="ui-button-secondary" update="dt-products messages" style="margin-right: .5rem"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                         <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
                                          icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
-                                         styleClass="ui-button-danger" update="dt-products messages" style="margin-right: .5rem"
+                                         styleClass="ui-button-danger" update="dt-pessoas messages" style="margin-right: .5rem"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                         </p:commandButton>
                     </p:toolbarGroup>
@@ -51,12 +51,15 @@
                     </p:toolbarGroup>
                 </p:toolbar>
 
-                <p:dataTable id="dt-products" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.products}"
-                             reflow="true" styleClass="products-table" selection="#{pessoaBean.selectedProducts}"
-                             rowKey="#{pessoa.id}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom">
+                <p:dataTable id="dt-pessoas" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.pessoas}"
+                             reflow="true" styleClass="products-table" 
+                             rowKey="#{pessoa.id}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="10,20,50,100">
                     <f:facet name="header">
                         <div class="products-table-header">
-                            <span style="font-weight: bold">PESSOAS</span>
+                            <span style="font-weight: bold">LISTAGEM DE PESSOAS</span>
                         </div>
                     </f:facet>
 
@@ -91,7 +94,7 @@
                         <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
                     </p:column>
 
-                    <p:column exportable="false" ariaHeaderText="Actions">
+                    <p:column exportable="false" headerText="Ações">
                         <p:commandButton icon="pi pi-pencil" update=":dialogs:pessoaDialog"
                                          oncomplete="PF('pessoaDialog').show()" action="#{pessoaBean.insertUpdatePessoa()}"
                                          styleClass="edit-button rounded-button ui-button-success" process="@this">
@@ -114,7 +117,7 @@
 
             <h:form id="dialogs">
                 <!-- Modal de Cadastro/Edição -->
-                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog"> 
+                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog" appendTo="@(body)"> 
                     <h:panelGrid columns="2">
                         <h:outputLabel for="nome" value="Nome:" />
                         <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
@@ -138,7 +141,7 @@
                         </p:selectOneMenu>
                         <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
                         <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
-                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" process="@form" update=":form:dt-products"
+                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" immediate="true" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages"
                                          style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
                         <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
                     </h:panelGrid>
@@ -151,56 +154,10 @@
                     </h:panelGrid>
                 </p:dialog>
 
-                <p:dialog header="Detalhes da pessoa" showEffect="fade" modal="true" widgetVar="manageProductDialog"
-                          responsive="true">
-                    <p:outputPanel id="manage-product-content" class="ui-fluid">
-                        <p:outputPanel rendered="#{not empty pessoaBean.selectedProduct}">
-                            <p:graphicImage name="images/product/#{pessoaBean.selectedProduct.image}" library="demo"
-                                            styleClass="product-image" rendered="#{not empty pessoaBean.selectedProduct.image}" />
-                            <div class="field">
-                                <p:outputLabel for="name">Name</p:outputLabel>
-                                <p:inputText id="name" value="#{pessoaBean.selectedProduct.name}" required="true" />
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="description">Description</p:outputLabel>
-                                <p:inputTextarea id="description" value="#{pessoaBean.selectedProduct.description}" />
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="category">Category</p:outputLabel>
-                                <p:selectOneRadio id="category" value="#{pessoaBean.selectedProduct.category}"
-                                                  layout="responsive" columns="2">
-                                    <f:selectItem itemLabel="Accessories" itemValue="Accessories" />
-                                    <f:selectItem itemLabel="Clothing" itemValue="Clothing" />
-                                    <f:selectItem itemLabel="Electronics" itemValue="Electronics" />
-                                    <f:selectItem itemLabel="Fitness" itemValue="Fitness" />
-                                </p:selectOneRadio>
-                            </div>
-                            <div class="formgrid grid">
-                                <div class="field col">
-                                    <p:outputLabel for="price">Price</p:outputLabel>
-                                    <p:inputNumber id="price" value="#{pessoaBean.selectedProduct.price}" symbol=" USD"
-                                                   symbolPosition="s" decimalSeparator="." thousandSeparator="," />
-                                </div>
-                                <div class="field col">
-                                    <p:outputLabel for="quantity">Quantity</p:outputLabel>
-                                    <p:spinner id="quantity" min="0" value="#{pessoaBean.selectedProduct.quantity}" />
-                                </div>
-                            </div>
-                        </p:outputPanel>
-                    </p:outputPanel>
-
-                    <f:facet name="footer">
-                        <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{pessoaBean.saveProduct}"
-                                         update="manage-product-content" process="manage-product-content @this" />
-                        <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
-                                         class="ui-button-secondary" type="button" />
-                    </f:facet>
-                </p:dialog>
-
                 <p:confirmDialog widgetVar="deletePessoa" showEffect="fade" width="300"
                                  message="Deletar a pessoa?" header="Confirmação" severity="warn">
                     <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaBean.excluir(pessoaBean.pessoa)}"
-                                     process="@this" update=":form:dt-products"
+                                     process="@this" update=":form:dt-pessoas :form:messages"
                                      oncomplete="PF('deletePessoa').hide()" />
                     <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
                                      onclick="PF('deletePessoa').hide()" />

@@ -1,7 +1,9 @@
 package com.felipe.mvnsalarios.service;
 
 import com.felipe.mvnsalarios.domain.Pessoa;
+import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.repository.PessoaRepository;
+import com.felipe.mvnsalarios.repository.PessoaSalarioConsolidadoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,8 +16,16 @@ public class PessoaService {
     @Inject
     private PessoaRepository pessoaRepository;
 
+    @Inject
+    private PessoaSalarioConsolidadoRepository pessoaSalarioConsolidadoRepository;
+
     public Pessoa save(Pessoa pessoa) {
-        return pessoaRepository.save(pessoa);
+        if (pessoa.getId() != null) {
+            return pessoaRepository.update(pessoa);
+        } else {
+            return pessoaRepository.save(pessoa);
+        }
+
     }
 
     public List<Pessoa> findAll() {
@@ -23,7 +33,9 @@ public class PessoaService {
     }
 
     public void deleteById(Pessoa pessoa) {
-//        pessoaRepository.removeOne(Pessoa.class, pessoa.getId());
+        if (pessoa.getPessoaSalarioConsolidado() != null) {
+            pessoaSalarioConsolidadoRepository.deleteById(PessoaSalarioConsolidado.class, pessoa.getPessoaSalarioConsolidado().getId());
+        }
         pessoaRepository.deleteById(Pessoa.class, pessoa.getId());
     }
 

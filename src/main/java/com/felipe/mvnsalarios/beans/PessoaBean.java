@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.util.IOUtils;
 
 @Named
-//@RequestScoped
 @ViewScoped
 @Getter
 @Setter
@@ -54,15 +53,13 @@ public class PessoaBean implements Serializable {
     private Pessoa pessoa = new Pessoa();
     private boolean visualizationMode;
 
-    private List<Pessoa> products;
-    private Pessoa selectedProduct;
-    private List<Pessoa> selectedProducts;
+    private List<Pessoa> pessoas;
+    private Pessoa selectedPessoa;
     private List<Cargo> cargos = new ArrayList<>();
 
     @PostConstruct
     public void init() {
-        this.products = this.pessoaService.findAll();
-        this.selectedProducts = new ArrayList<>();
+        this.pessoas = this.pessoaService.findAll();
     }
 
     public List<Cargo> getCargos() {
@@ -81,21 +78,35 @@ public class PessoaBean implements Serializable {
     }
 
     public void salvar() {
-        pessoaService.save(pessoa);
-        pessoa = new Pessoa();
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Operação efetuada!", null));
-        this.products = this.pessoaService.findAll();
+        try {
+            pessoaService.save(pessoa);
+            pessoa = new Pessoa();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Operação efetuada!", null));
+            this.pessoas = this.pessoaService.findAll();
+        } catch (Exception e) {
+            log.error("Erro", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Erro", e.getMessage()));
+        }
     }
 
     public void excluir(Pessoa pessoa) {
-        pessoaService.deleteById(pessoa);
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Pessoa removida com sucesso!",
-                        null));
-        this.products = this.pessoaService.findAll();
+        try {
+            pessoaService.deleteById(pessoa);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Pessoa removida com sucesso!",
+                            null));
+            this.pessoas = this.pessoaService.findAll();
+        } catch (Exception e) {
+            log.error("Erro", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Erro", e.getMessage()));
+        }
     }
 
     public void prepararEdicao(Pessoa Pessoa) {
@@ -121,7 +132,7 @@ public class PessoaBean implements Serializable {
 
     public void calcularSalarios() {
         pessoaSalarioConsolidadoService.calcularSalarios();
-        this.products = this.pessoaService.findAll();
+        this.pessoas = this.pessoaService.findAll();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Os salários foram atualizados!",
@@ -131,7 +142,7 @@ public class PessoaBean implements Serializable {
 
     public void calcularSalariosAssincrono() {
         pessoaSalarioConsolidadoService.calcularSalariosAssincrono();
-        this.products = this.pessoaService.findAll();
+        this.pessoas = this.pessoaService.findAll();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Os salários ainda estão sendo calculados!",
@@ -141,18 +152,10 @@ public class PessoaBean implements Serializable {
 
     public void deleteSalariosCalculados() {
         pessoaSalarioConsolidadoService.deleteAll();
-        this.products = this.pessoaService.findAll();
+        this.pessoas = this.pessoaService.findAll();
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Os salários foram deletados!", null));
-    }
-
-    public void refresh() {
-        this.products = pessoaService.findAll();
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Página atualizada",
-                        null));
     }
 
     public void gerarRelatorioSalarios() {
@@ -172,7 +175,7 @@ public class PessoaBean implements Serializable {
             }
 
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStreamJrxml);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.products);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(this.pessoas);
 
             Map<String, Object> parametros = new HashMap<>();
 
@@ -193,5 +196,13 @@ public class PessoaBean implements Serializable {
         } catch (Exception e) {
             log.error("Erro na geração do relatório de salários", e);
         }
+    }
+
+    public void refresh() {
+        this.pessoas = pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Página atualizada",
+                        null));
     }
 }
