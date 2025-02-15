@@ -8,6 +8,7 @@ import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.domain.TipoVencimento;
 import com.felipe.mvnsalarios.domain.Vencimentos;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +20,50 @@ public class PessoaUnitTest {
     private static List<Cargo> cargos;
     private static List<Vencimentos> vencimentos;
     private static List<CargoVencimentos> cargosVencimentos;
+
+    public Pessoa construirPessoaGenerica() {
+        Pessoa pessoa = new Pessoa();
+
+        pessoa.setNome("João da Silva");
+        pessoa.setCidade("São Paulo");
+        pessoa.setEmail("joao.silva@email.com");
+        pessoa.setCep("01000-000");
+        pessoa.setEndereco("Rua das Flores, Nº 123");
+        pessoa.setUsuario("joaosilva");
+        pessoa.setTelefone("(11) 91234-5678");
+        pessoa.setPais("Brasil");
+        pessoa.setDataNascimento(LocalDate.of(1990, 5, 20));
+        return pessoa;
+    }
+
+    public Vencimentos construirVencimentosGenericos() {
+        Vencimentos vencimentos = new Vencimentos();
+
+        vencimentos.setDescricao("Salário Base");
+        vencimentos.setValor(new BigDecimal("2500.00"));
+        vencimentos.setTipoVencimento(TipoVencimento.CREDITO);
+
+        return vencimentos;
+    }
+
+    public CargoVencimentos construirCargoVencimentosGenerico() {
+        CargoVencimentos cargoVencimentos = new CargoVencimentos();
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+        cargoVencimentos.setCargo(cargo);
+        cargoVencimentos.setVencimentos(construirVencimentosGenericos());
+
+        return cargoVencimentos;
+    }
+
+    public Vencimentos construirVencimentos(BigDecimal valor, TipoVencimento tipo) {
+        Vencimentos vencimentos = new Vencimentos();
+        vencimentos.setDescricao("Vencimento Teste");
+        vencimentos.setValor(valor);
+        vencimentos.setTipoVencimento(tipo);
+        return vencimentos;
+    }
 
     @BeforeAll
     static void setup() {
@@ -176,4 +221,259 @@ public class PessoaUnitTest {
                 "Não é possível calcular o salário de joão. O cargo do vencimento informado (Analista) está diferente do cargo da pessoa (Porteiro)");
     }
 
+    @Test
+    void testCalculoSalarioPreenchido() {
+        Pessoa p = construirPessoaGenerica();
+        List<CargoVencimentos> cargosVencimentos = new ArrayList<>();
+        List<PessoaSalarioConsolidado> consolidado = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        for (int j = 0; j < 50; j++) {
+            cargosVencimentos.add(construirCargoVencimentosGenerico());
+        }
+
+        consolidado.add(p.calcularSalarioConsolidado(cargosVencimentos));
+        Assertions.assertNotNull(p);
+        Assertions.assertNotNull(cargosVencimentos);
+        Assertions.assertNotNull(consolidado);
+    }
+
+    @Test
+    void testCalculoSalarioComDebito() {
+        Pessoa p = construirPessoaGenerica();
+        CargoVencimentos cargoVencimento1 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento2 = new CargoVencimentos();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        Vencimentos v1 = new Vencimentos();
+        v1.setDescricao("v1");
+        v1.setId(Integer.valueOf("1"));
+        v1.setTipoVencimento(TipoVencimento.CREDITO);
+        v1.setValor(new BigDecimal("3000.00"));
+
+        Vencimentos v2 = new Vencimentos();
+        v2.setDescricao("v1");
+        v2.setId(Integer.valueOf("1"));
+        v2.setTipoVencimento(TipoVencimento.DEBITO);
+        v2.setValor(new BigDecimal("1000.00"));
+
+        cargoVencimento1.setCargo(cargo);
+        cargoVencimento1.setId(Integer.valueOf("1"));
+        cargoVencimento1.setVencimentos(v1);
+        cargoVencimentos.add(cargoVencimento1);
+
+        cargoVencimento2.setCargo(cargo);
+        cargoVencimento2.setId(Integer.valueOf("1"));
+        cargoVencimento2.setVencimentos(v2);
+        cargoVencimentos.add(cargoVencimento2);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(new BigDecimal("2000.00"), consolidado.getSalario());
+    }
+
+    @Test
+    void testCalculoSalarioZerado() {
+        Pessoa p = construirPessoaGenerica();
+        CargoVencimentos cargoVencimento1 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento2 = new CargoVencimentos();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        Vencimentos v1 = new Vencimentos();
+        v1.setDescricao("v1");
+        v1.setId(Integer.valueOf("1"));
+        v1.setTipoVencimento(TipoVencimento.CREDITO);
+        v1.setValor(new BigDecimal("1000.00"));
+
+        Vencimentos v2 = new Vencimentos();
+        v2.setDescricao("v1");
+        v2.setId(Integer.valueOf("1"));
+        v2.setTipoVencimento(TipoVencimento.DEBITO);
+        v2.setValor(new BigDecimal("1000.00"));
+
+        cargoVencimento1.setCargo(cargo);
+        cargoVencimento1.setId(Integer.valueOf("1"));
+        cargoVencimento1.setVencimentos(v1);
+        cargoVencimentos.add(cargoVencimento1);
+
+        cargoVencimento2.setCargo(cargo);
+        cargoVencimento2.setId(Integer.valueOf("1"));
+        cargoVencimento2.setVencimentos(v2);
+        cargoVencimentos.add(cargoVencimento2);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(BigDecimal.ZERO.doubleValue(), consolidado.getSalario().doubleValue());
+    }
+
+    @Test
+    void testCalculoSalarioComDebitoUnico() {
+        Pessoa p = construirPessoaGenerica();
+        CargoVencimentos cargoVencimento1 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento2 = new CargoVencimentos();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        Vencimentos v1 = new Vencimentos();
+        v1.setDescricao("v1");
+        v1.setId(Integer.valueOf("1"));
+        v1.setTipoVencimento(TipoVencimento.CREDITO);
+        v1.setValor(new BigDecimal("5000.00"));
+
+        Vencimentos v2 = new Vencimentos();
+        v2.setDescricao("v1");
+        v2.setId(Integer.valueOf("1"));
+        v2.setTipoVencimento(TipoVencimento.DEBITO);
+        v2.setValor(new BigDecimal("1000.00"));
+
+        cargoVencimento1.setCargo(cargo);
+        cargoVencimento1.setId(Integer.valueOf("1"));
+        cargoVencimento1.setVencimentos(v1);
+        cargoVencimentos.add(cargoVencimento1);
+
+        cargoVencimento2.setCargo(cargo);
+        cargoVencimento2.setId(Integer.valueOf("1"));
+        cargoVencimento2.setVencimentos(v2);
+        cargoVencimentos.add(cargoVencimento2);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(new BigDecimal("4000.00"), consolidado.getSalario());
+    }
+
+    @Test
+    void testCalculoSalarioComCreditosEDebitos() {
+        Pessoa p = construirPessoaGenerica();
+        CargoVencimentos cargoVencimento1 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento2 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento3 = new CargoVencimentos();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        Vencimentos v1 = new Vencimentos();
+        v1.setDescricao("v1");
+        v1.setId(Integer.valueOf("1"));
+        v1.setTipoVencimento(TipoVencimento.CREDITO);
+        v1.setValor(new BigDecimal("3000.00"));
+
+        Vencimentos v2 = new Vencimentos();
+        v2.setDescricao("v1");
+        v2.setId(Integer.valueOf("1"));
+        v2.setTipoVencimento(TipoVencimento.CREDITO);
+        v2.setValor(new BigDecimal("1000.00"));
+
+        Vencimentos v3 = new Vencimentos();
+        v3.setDescricao("v1");
+        v3.setId(Integer.valueOf("1"));
+        v3.setTipoVencimento(TipoVencimento.DEBITO);
+        v3.setValor(new BigDecimal("500.00"));
+
+        cargoVencimento1.setCargo(cargo);
+        cargoVencimento1.setId(Integer.valueOf("1"));
+        cargoVencimento1.setVencimentos(v1);
+        cargoVencimentos.add(cargoVencimento1);
+
+        cargoVencimento2.setCargo(cargo);
+        cargoVencimento2.setId(Integer.valueOf("1"));
+        cargoVencimento2.setVencimentos(v2);
+        cargoVencimentos.add(cargoVencimento2);
+
+        cargoVencimento3.setCargo(cargo);
+        cargoVencimento3.setId(Integer.valueOf("1"));
+        cargoVencimento3.setVencimentos(v3);
+        cargoVencimentos.add(cargoVencimento3);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(new BigDecimal("3500.00"), consolidado.getSalario());
+    }
+
+    @Test
+    void testCalculoSalarioComDebitoMaiorQueCredito() {
+        Pessoa p = construirPessoaGenerica();
+        CargoVencimentos cargoVencimento1 = new CargoVencimentos();
+        CargoVencimentos cargoVencimento2 = new CargoVencimentos();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        Vencimentos v1 = new Vencimentos();
+        v1.setDescricao("v1");
+        v1.setId(Integer.valueOf("1"));
+        v1.setTipoVencimento(TipoVencimento.CREDITO);
+        v1.setValor(new BigDecimal("1000.00"));
+
+        Vencimentos v2 = new Vencimentos();
+        v2.setDescricao("v1");
+        v2.setId(Integer.valueOf("1"));
+        v2.setTipoVencimento(TipoVencimento.DEBITO);
+        v2.setValor(new BigDecimal("2000.00"));
+
+        cargoVencimento1.setCargo(cargo);
+        cargoVencimento1.setId(Integer.valueOf("1"));
+        cargoVencimento1.setVencimentos(v1);
+        cargoVencimentos.add(cargoVencimento1);
+
+        cargoVencimento2.setCargo(cargo);
+        cargoVencimento2.setId(Integer.valueOf("1"));
+        cargoVencimento2.setVencimentos(v2);
+        cargoVencimentos.add(cargoVencimento2);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(new BigDecimal("-1000.00"), consolidado.getSalario());
+    }
+
+    @Test
+    void testCalculoSalarioSemVencimentos() {
+        Pessoa p = construirPessoaGenerica();
+        List<CargoVencimentos> cargoVencimentos = new ArrayList<>();
+
+        Cargo cargo = new Cargo();
+        cargo.setNome("Estagiario");
+        cargo.setId(Integer.valueOf("1"));
+
+        p.setCargo(cargo);
+
+        PessoaSalarioConsolidado consolidado = p.calcularSalarioConsolidado(cargoVencimentos);
+
+        Assertions.assertNotNull(consolidado);
+        Assertions.assertEquals(BigDecimal.ZERO.doubleValue(), consolidado.getSalario().doubleValue());
+    }
 }
