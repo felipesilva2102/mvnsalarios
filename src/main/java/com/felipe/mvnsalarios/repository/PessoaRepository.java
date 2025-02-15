@@ -26,16 +26,4 @@ public class PessoaRepository extends GenericRepository<Pessoa, Integer> {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    public void lastId() {
-        try (EntityManager entityManager = JpaUtil.getEntityManager()) {
-            entityManager.getTransaction().begin();
-            entityManager.createNativeQuery("SELECT setval('pessoa_seq', COALESCE((SELECT MAX(id) FROM pessoa), 1))").executeUpdate();
-            entityManager.flush();
-            entityManager.getTransaction().commit();
-        } catch (Exception e) {
-            JpaUtil.getEntityManager().getTransaction().rollback();
-            e.printStackTrace();
-        }
-    }
-
 }

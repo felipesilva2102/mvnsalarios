@@ -48,7 +48,4 @@ public class PessoaService {
         return pessoaRepository.findById(Pessoa.class, pessoa.getId());
     }
     
-    public void lastId() {
-         pessoaRepository.lastId();
-    }
 }
