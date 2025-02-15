@@ -73,4 +73,10 @@ public class PessoaSalarioConsolidadoService {
         return pessoaSalarioConsolidadoRepository.findAll(PessoaSalarioConsolidado.class);
     }
 
+    public void calcularSalario(Pessoa pessoa) {
+        pessoa.setCargo(cargoService.findById(pessoa.getCargo().getId()));
+        PessoaSalarioConsolidado pessoaCalculada = pessoa.calcularSalarioConsolidado(cargoVencimentosService.findByCargo(pessoa.getCargo()));
+        pessoaSalarioConsolidadoRepository.save(pessoaCalculada);
+    }
+
 }

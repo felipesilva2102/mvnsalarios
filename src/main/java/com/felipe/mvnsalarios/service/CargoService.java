@@ -6,11 +6,16 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Transactional
 public class CargoService {
+    
+    private Map<Integer, Cargo> cargoAsMap;
+    private List<Cargo> cargos;
 
     @Inject
     private CargoRepository cargoRepository;
@@ -30,6 +35,13 @@ public class CargoService {
             return cargoOptional.get();
         }
         return null;
+    }
+
+    public Map<Integer, Cargo> getCargosAsMap() {
+        if (cargoAsMap == null) {
+            cargoAsMap = findAll().stream().collect(Collectors.toMap(Cargo::getId, cargo -> cargo));
+        }
+        return cargoAsMap;
     }
 
 }

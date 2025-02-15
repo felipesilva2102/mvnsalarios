@@ -8,6 +8,7 @@ import com.felipe.mvnsalarios.service.PessoaSalarioConsolidadoService;
 import com.felipe.mvnsalarios.service.PessoaService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -15,6 +16,7 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,7 +57,9 @@ public class PessoaBean implements Serializable {
 
     private List<Pessoa> pessoas;
     private Pessoa selectedPessoa;
-    private List<Cargo> cargos = new ArrayList<>();
+
+    private Cargo cargo = new Cargo();
+    private String cargoSelecionado;
 
     @PostConstruct
     public void init() {
@@ -63,10 +67,7 @@ public class PessoaBean implements Serializable {
     }
 
     public List<Cargo> getCargos() {
-        if (cargos.isEmpty()) {
-            cargos = cargoService.findAll();
-        }
-        return cargos;
+        return cargoService.findAll();
     }
 
     public Pessoa getPessoa() {
@@ -128,6 +129,29 @@ public class PessoaBean implements Serializable {
     public void inicializarPessoa() {
         insertUpdatePessoa();
         pessoa = new Pessoa();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            externalContext.redirect("/mvnsalarios/gerenciarPessoa.xhtml");
+        } catch (IOException e) {
+        }
+    }
+
+    public void atualizarPessoa() {
+        insertUpdatePessoa();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            externalContext.redirect("/mvnsalarios/gerenciarPessoa.xhtml");
+        } catch (IOException e) {
+        }
+    }
+
+    public void cancelar() {
+        pessoa = new Pessoa();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            externalContext.redirect("/mvnsalarios/pessoa.xhtml");
+        } catch (IOException e) {
+        }
     }
 
     public void calcularSalarios() {
@@ -138,6 +162,15 @@ public class PessoaBean implements Serializable {
                         "Os salários foram atualizados!",
                         "O cálculo foi concluído com sucesso."));
 
+    }
+    
+    public void calcularSalario() {
+        pessoaSalarioConsolidadoService.calcularSalario(pessoa);
+        this.pessoas = this.pessoaService.findAll();
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "O salário foi atualizado!",
+                        "O cálculo foi concluído com sucesso."));
     }
 
     public void calcularSalariosAssincrono() {

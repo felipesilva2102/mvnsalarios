@@ -105,6 +105,11 @@
                                          oncomplete="PF('pessoaDialog').show()" update=":dialogs:pessoaDialog">
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
+                        <p:commandButton process="@this" icon="pi pi-dollar" action="#{pessoaBean.calcularSalario()}"
+                                         styleClass="ui-button-info rounded-button" update="dt-pessoas messages"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
                         <p:commandButton styleClass="ui-button-danger rounded-button" icon="pi pi-trash"
                                          process="@this"
                                          oncomplete="PF('deletePessoa').show()">

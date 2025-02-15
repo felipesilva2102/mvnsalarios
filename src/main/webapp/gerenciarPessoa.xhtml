@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+    <h:head>
+        <title>Cadastro de Pessoa</title>
+    </h:head>
+    <h:body>
+
+        <h:form id="formPessoa">
+            <!-- Nome -->
+            <p:panel header="Cadastro de Pessoa">
+                <h:panelGrid columns="3" styleClass="ui-grid">
+                    <h:outputLabel for="nome" value="Nome:"/>
+                    <p:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true"/>
+
+                    <!-- Cidade -->
+                    <h:outputLabel for="cidade" value="Cidade:"/>
+                    <p:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true"/>
+
+                    <!-- Email -->
+                    <h:outputLabel for="email" value="Email:"/>
+                    <p:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true"/>
+
+                    <!-- CEP -->
+                    <h:outputLabel for="cep" value="CEP:"/>
+                    <p:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true"/>
+
+                    <!-- Endereço -->
+                    <h:outputLabel for="endereco" value="Endereço:"/>
+                    <p:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true"/>
+
+                    <!-- Usuário -->
+                    <h:outputLabel for="usuario" value="Usuário:"/>
+                    <p:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true"/>
+
+                    <!-- Telefone -->
+                    <h:outputLabel for="telefone" value="Telefone:"/>
+                    <p:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true"/>
+
+                    <!-- País -->
+                    <h:outputLabel for="pais" value="País:"/>
+                    <p:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true"/>
+
+                    <!-- Data de Nascimento -->
+                    <h:outputLabel for="dataNascimento" value="Data de Nascimento:"/>
+                    <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true"/>
+
+                    <!-- Cargo -->
+                    <h:outputLabel for="cargo" value="Cargo:"/>
+                    <p:selectOneMenu id="cargo" value="#{pessoaBean.cargoSelecionado}" disabled="#{pessoaBean.visualizationMode}">
+                        <f:selectItem itemLabel="Select One" itemValue=""/>
+                        <f:selectItems value="#{pessoaBean.cargos}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+
+                <!-- Botões -->
+                <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" style="margin-right: .5rem" update="formPessoa" process="@form"/>
+                <p:commandButton value="Cancelar" action="#{pessoaBean.cancelar()}" style="margin-right: .5rem" immediate="true"/>
+            </p:panel>
+        </h:form>
+
+    </h:body>
+</html>
