@@ -63,10 +63,15 @@ public class Pessoa {
     private LocalDate dataNascimento;
 
     public PessoaSalarioConsolidado calcularSalarioConsolidado(List<CargoVencimentos> cargoVencimentos) {
-
         PessoaSalarioConsolidado pessoaSalarioConsolidadoCalculado = new PessoaSalarioConsolidado();
+
         BigDecimal salarioCalculado = BigDecimal.ZERO;
         for (CargoVencimentos cargoVencimento : cargoVencimentos) {
+            if (!this.cargo.getId().equals(cargoVencimento.getCargo().getId())) {
+                throw new DominioException("Não é possível calcular o salário de " + this.getNome() + ". "
+                        + "O cargo do vencimento informado (" + cargoVencimento.getCargo().getNome() + ") está diferente do cargo da pessoa (" + this.getCargo().getNome() + ") ");
+            }
+
             Vencimentos vencimentos = cargoVencimento.getVencimentos();
             if (vencimentos.getTipoVencimento().equals(TipoVencimento.CREDITO)) {
                 salarioCalculado = salarioCalculado.add(vencimentos.getValor());

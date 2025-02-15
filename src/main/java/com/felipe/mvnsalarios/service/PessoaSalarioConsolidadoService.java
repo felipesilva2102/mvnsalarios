@@ -1,6 +1,5 @@
 package com.felipe.mvnsalarios.service;
 
-import com.felipe.mvnsalarios.domain.CargoVencimentos;
 import com.felipe.mvnsalarios.domain.Pessoa;
 import com.felipe.mvnsalarios.domain.PessoaSalarioConsolidado;
 import com.felipe.mvnsalarios.repository.PessoaSalarioConsolidadoRepository;
