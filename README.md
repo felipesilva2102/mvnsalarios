@@ -53,11 +53,6 @@ Ele permite o gerenciamento de pessoas e cargos, além do cálculo de salários,
    - Abra: http://localhost:5050/browser/  
    - Utilize os arquivos CSV disponíveis no projeto (src/main/docs/avaliacao/*.csv) para inserir os registros no banco de dados.
 
-8. Execução do sistema:
-   
-   sh
-   mvn clean package wildfly:dev
-
 ## Observações  
 - O relatório relatorioSalarios.jrxml deve estar localizado em:  
   
