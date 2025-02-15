@@ -47,4 +47,8 @@ public class PessoaService {
     public Optional<Pessoa> findById(Pessoa pessoa) {
         return pessoaRepository.findById(Pessoa.class, pessoa.getId());
     }
+    
+    public void lastId() {
+         pessoaRepository.lastId();
+    }
 }

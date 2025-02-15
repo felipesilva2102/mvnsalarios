@@ -132,7 +132,7 @@ public class PessoaBean implements Serializable {
                         "O cálculo foi concluído com sucesso."));
 
     }
-    
+
     public void calcularSalario() {
         pessoaSalarioConsolidadoService.calcularSalario(pessoa);
         this.pessoas = this.pessoaService.findAll();
