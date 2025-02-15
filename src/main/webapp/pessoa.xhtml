@@ -106,7 +106,7 @@
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
                         <p:commandButton process="@this" icon="pi pi-dollar" action="#{pessoaBean.calcularSalario()}"
-                                         styleClass="ui-button-info rounded-button" update="dt-pessoas messages"
+                                         styleClass="ui-button-info rounded-button" update=":form:dt-pessoas :form:messages"
                                          onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
                             <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
                         </p:commandButton>
