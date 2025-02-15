@@ -101,18 +101,20 @@ Ele permite o gerenciamento de pessoas e cargos, além do cálculo de salários,
      ![image](https://github.com/user-attachments/assets/597c9a32-6156-4cc5-acff-74553484008e)
 
    - Realizar essa operação (com seus referidos arquivos CSVs) para todas as tabelas, seguindo a sequência citada anteriormente.
-   - Se conecte ao banco
+   - Se conecte ao banco:
+     
    ![image](https://github.com/user-attachments/assets/6b01a781-f869-41a5-ba76-b2de508890eb)
    - Preencha os campos e selecione "Connect & Open Query Tool":
+     
    ![image](https://github.com/user-attachments/assets/adbdc5f5-b35e-426b-8217-444a4e8f29d4)
+
    -    execute a query abaixo:
    ```
    SELECT setval('pessoa_seq', COALESCE((SELECT MAX(id) FROM pessoa), 1));
    SELECT last_value FROM pessoa_seq;
    ```
-   ![image](https://github.com/user-attachments/assets/2767e7a4-231c-43a5-ac61-db903afe1a35)
-
    - o resultado exibido deve ser:
+     
    ![image](https://github.com/user-attachments/assets/5330e705-0747-448c-aa4c-2c8ea0f6ef1d)
 
    - Realizadas essas operações no pgAdmin 4, o banco de dados estará alimentado. Só voltar para o sistema e dar refresh na página xhtml que os dados serão renderizados.
