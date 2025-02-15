@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,34 +123,6 @@ public class PessoaBean implements Serializable {
 
     public void insertUpdatePessoa() {
         visualizationMode = false;
-    }
-
-    public void inicializarPessoa() {
-        insertUpdatePessoa();
-        pessoa = new Pessoa();
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        try {
-            externalContext.redirect("/mvnsalarios/gerenciarPessoa.xhtml");
-        } catch (IOException e) {
-        }
-    }
-
-    public void atualizarPessoa() {
-        insertUpdatePessoa();
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        try {
-            externalContext.redirect("/mvnsalarios/gerenciarPessoa.xhtml");
-        } catch (IOException e) {
-        }
-    }
-
-    public void cancelar() {
-        pessoa = new Pessoa();
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        try {
-            externalContext.redirect("/mvnsalarios/pessoa.xhtml");
-        } catch (IOException e) {
-        }
     }
 
     public void calcularSalarios() {

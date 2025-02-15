@@ -22,6 +22,10 @@ public class PessoaService {
 
     public Pessoa save(Pessoa pessoa) {
         if (pessoa.getId() != null) {
+            Pessoa pessoaBD = pessoaRepository.findById(Pessoa.class, pessoa.getId()).get();
+            if (!pessoaBD.getCargo().getId().equals(pessoa.getCargo().getId()) && pessoaBD.getPessoaSalarioConsolidado() != null) {
+                pessoaSalarioConsolidadoRepository.deleteById(PessoaSalarioConsolidado.class, pessoaBD.getPessoaSalarioConsolidado().getId());
+            }
             return pessoaRepository.update(pessoa);
         } else {
             return pessoaRepository.save(pessoa);

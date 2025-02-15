@@ -18,7 +18,7 @@
 
                 <p:toolbar>
                     <p:toolbarGroup>
-                        <p:commandButton value="Novo" icon="pi pi-plus" process="@this" action="#{pessoaBean.inicializarPessoa()}"
+                        <p:commandButton value="Novo" icon="pi pi-plus" process="@this" action="#{pessoaBean.insertUpdatePessoa()}"
                                          update=":dialogs:pessoaDialog messages" oncomplete="PF('pessoaDialog').show()"
                                          styleClass="ui-button-success" style="margin-right: .5rem">
                         </p:commandButton>
@@ -122,7 +122,7 @@
 
             <h:form id="dialogs">
                 <!-- Modal de Cadastro/Edição -->
-                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog" appendTo="@(body)"> 
+                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog" responsive="true"> 
                     <h:panelGrid columns="2">
                         <h:outputLabel for="nome" value="Nome:" />
                         <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
@@ -141,14 +141,17 @@
                         <h:outputLabel for="pais" value="País:" />
                         <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
                         <h:outputLabel for="cargo" value="Cargo:" />
-                        <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" disabled="#{pessoaBean.visualizationMode}">
+                        <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" disabled="#{pessoaBean.visualizationMode}" converter="cargoConverter">
                             <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
                         </p:selectOneMenu>
                         <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
                         <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
-                        <p:commandButton value="Salvar" action="#{pessoaBean.salvar()}" immediate="true" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages"
-                                         style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
-                        <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Salvar" actionListener="#{pessoaBean.salvar()}" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages"
+                                             style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
+                            <p:commandButton value="Cancelar" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
+                        </f:facet>
                     </h:panelGrid>
                 </p:dialog>
 
