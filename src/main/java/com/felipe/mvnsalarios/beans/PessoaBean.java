@@ -74,6 +74,10 @@ public class PessoaBean implements Serializable {
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
+    
+    public void resetDialog(){
+        this.pessoa = new Pessoa();
+    }
 
     public void salvar() {
         try {
@@ -105,14 +109,6 @@ public class PessoaBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             "Erro", e.getMessage()));
         }
-    }
-
-    public void prepararEdicao(Pessoa Pessoa) {
-        this.pessoa = Pessoa;
-    }
-
-    public void prepararDetalhamento(Pessoa Pessoa) {
-        this.pessoa = Pessoa;
     }
 
     public void detailPessoa() {

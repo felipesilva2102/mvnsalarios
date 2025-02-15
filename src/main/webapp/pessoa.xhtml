@@ -148,9 +148,9 @@
                         <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
 
                         <f:facet name="footer">
-                            <p:commandButton value="Salvar" actionListener="#{pessoaBean.salvar()}" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages"
+                            <p:commandButton value="Salvar" actionListener="#{pessoaBean.salvar()}" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages pessoaDialog"
                                              style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
-                            <p:commandButton value="Cancelar" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem"/>
+                            <p:commandButton value="Cancelar" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem" update="pessoaDialog" actionListener="#{pessoaBean.resetDialog()}"/>
                         </f:facet>
                     </h:panelGrid>
                 </p:dialog>
