@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Deploy no WildFly 36
-FROM quay.io/wildfly/wildfly:36.0.1.Final
+FROM wildfly:36.0.1.Final
 # Copia o WAR gerado para a pasta de deploy do WildFly
 COPY --from=build /app/target/*.war /opt/jboss/wildfly/standalone/deployments/ROOT.war
 
