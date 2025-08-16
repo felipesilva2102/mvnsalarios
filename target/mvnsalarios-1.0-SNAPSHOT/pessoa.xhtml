@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-us"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+    <h:head>
+        <title>.:: Listagem de Pessoas ::.</title>
+        <meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+    </h:head>
+
+    <h:body>
+
+        <div class="card crud-demo">
+            <h:form id="form">
+                <p:growl id="messages" showDetail="true" />
+
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="Novo" icon="pi pi-plus" process="@this" action="#{pessoaBean.insertUpdatePessoa()}"
+                                         update=":dialogs:pessoaDialog messages" oncomplete="PF('pessoaDialog').show()"
+                                         styleClass="ui-button-success" style="margin-right: .5rem">
+                        </p:commandButton>
+                        <p:commandButton id="calcular-salarios-button" value="Calcular Salários" 
+                                         icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalarios()}"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                        </p:commandButton>
+                        <p:commandButton id="calcular-salarios-assincrono-button" value="Calcular Salários (Assíncrono)" 
+                                         icon="pi pi-dollar" actionListener="#{pessoaBean.calcularSalariosAssincrono()}"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                        </p:commandButton>
+                        <p:commandButton id="refresh-button" value="Atualizar página" 
+                                         icon="pi pi-refresh" actionListener="#{pessoaBean.refresh()}"
+                                         styleClass="ui-button-secondary" update="dt-pessoas messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                        </p:commandButton>
+                        <p:commandButton id="deletar-salarios-calculados" value="Delete Salários" 
+                                         icon="pi pi-trash" actionListener="#{pessoaBean.deleteSalariosCalculados()}"
+                                         styleClass="ui-button-danger" update="dt-pessoas messages" style="margin-right: .5rem"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="gerar-relatorio-salarios-button" value="Relatório Salários" ajax="false"
+                                         icon="pi pi-file-pdf" action="#{pessoaBean.gerarRelatorioSalarios()}"
+                                         styleClass="ui-button-secondary">
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <p:dataTable id="dt-pessoas" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.pessoas}"
+                             reflow="true" styleClass="products-table" 
+                             rowKey="#{pessoa.id}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="10,20,50,100">
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">LISTAGEM DE PESSOAS</span>
+                        </div>
+                    </f:facet>
+
+                    <p:column exportable="false"></p:column>
+
+                    <p:column headerText="Id" sortBy="#{pessoa.id}" filterBy="#{pessoa.id}">
+                        <h:outputText value="#{pessoa.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
+                        <h:outputText value="#{pessoa.nome}" />
+                    </p:column>
+
+                    <p:column headerText="País" sortBy="#{pessoa.pais}" filterBy="#{pessoa.pais}">
+                        <h:outputText value="#{pessoa.pais}" />
+                    </p:column>
+
+                    <p:column headerText="Cidade" sortBy="#{pessoa.cidade}" filterBy="#{pessoa.cidade}">
+                        <h:outputText value="#{pessoa.cidade}" />
+                    </p:column>
+
+                    <p:column headerText="Telefone" sortBy="#{pessoa.telefone}" filterBy="#{pessoa.telefone}">
+                        <h:outputText value="#{pessoa.telefone}" />
+                    </p:column>
+
+                    <p:column headerText="Cargo" sortBy="#{pessoa.cargo.nome}" filterBy="#{pessoa.cargo.nome}">
+                        <h:outputText value="#{pessoa.cargo.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Salário" sortBy="#{pessoa.pessoaSalarioConsolidado.salario}">
+                        <h:outputText value="#{pessoa.pessoaSalarioConsolidado.salario}" rendered="#{not empty pessoa.pessoaSalarioConsolidado}"/>
+                        <h:outputText value="Ainda não calculado" rendered="#{empty pessoa.pessoaSalarioConsolidado}"/>
+                    </p:column>
+
+                    <p:column exportable="false" headerText="Ações">
+                        <p:commandButton icon="pi pi-pencil" update=":dialogs:pessoaDialog"
+                                         oncomplete="PF('pessoaDialog').show()" action="#{pessoaBean.insertUpdatePessoa()}"
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
+                        <p:commandButton styleClass="ui-button-info rounded-button" icon="pi pi-info-circle"
+                                         process="@this" action="#{pessoaBean.detailPessoa()}"
+                                         oncomplete="PF('pessoaDialog').show()" update=":dialogs:pessoaDialog">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
+                        <p:commandButton process="@this" icon="pi pi-dollar" action="#{pessoaBean.calcularSalario()}"
+                                         styleClass="ui-button-info rounded-button" update=":form:dt-pessoas :form:messages"
+                                         onstart="PF('loadingDialog').show();" oncomplete="PF('loadingDialog').hide();">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
+                        <p:commandButton styleClass="ui-button-danger rounded-button" icon="pi pi-trash"
+                                         process="@this"
+                                         oncomplete="PF('deletePessoa').show()">
+                            <f:setPropertyActionListener target="#{pessoaBean.pessoa}" value="#{pessoa}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+
+            <h:form id="dialogs">
+                <!-- Modal de Cadastro/Edição -->
+                <p:dialog header="Gerenciar Pessoa" widgetVar="pessoaDialog" modal="true" resizable="false" id="pessoaDialog" responsive="true"> 
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="nome" value="Nome:" />
+                        <h:inputText id="nome" value="#{pessoaBean.pessoa.nome}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cidade" value="Cidade:" />
+                        <h:inputText id="cidade" value="#{pessoaBean.pessoa.cidade}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="email" value="Email:" />
+                        <h:inputText id="email" value="#{pessoaBean.pessoa.email}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cep" value="CEP:" />
+                        <h:inputText id="cep" value="#{pessoaBean.pessoa.cep}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="endereco" value="Endereço:" />
+                        <h:inputText id="endereco" value="#{pessoaBean.pessoa.endereco}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="usuario" value="Usuário:" />
+                        <h:inputText id="usuario" value="#{pessoaBean.pessoa.usuario}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="telefone" value="Telefone:" />
+                        <h:inputText id="telefone" value="#{pessoaBean.pessoa.telefone}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="pais" value="País:" />
+                        <h:inputText id="pais" value="#{pessoaBean.pessoa.pais}" required="true" readonly="#{pessoaBean.visualizationMode}"/>
+                        <h:outputLabel for="cargo" value="Cargo:" />
+                        <p:selectOneMenu id="cargo" value="#{pessoaBean.pessoa.cargo}" required="true" disabled="#{pessoaBean.visualizationMode}" converter="cargoConverter">
+                            <f:selectItems value="#{pessoaBean.cargos}" var="cargo" itemValue="#{cargo}" itemLabel="#{cargo.nome}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel for="dataNascimento" value="Data de Nascimento:" />
+                        <p:calendar id="dataNascimento" value="#{pessoaBean.pessoa.dataNascimento}" pattern="dd/MM/yyyy" required="true" disabled="#{pessoaBean.visualizationMode}"/>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Salvar" actionListener="#{pessoaBean.salvar()}" process="pessoaDialog @this" update=":form:dt-pessoas :form:messages pessoaDialog"
+                                             style="margin-right: .5rem" oncomplete="PF('pessoaDialog').hide()" rendered="#{!pessoaBean.visualizationMode}"/>
+                            <p:commandButton value="Cancelar" oncomplete="PF('pessoaDialog').hide()" style="margin-right: .5rem" update="pessoaDialog" actionListener="#{pessoaBean.resetDialog()}"/>
+                        </f:facet>
+                    </h:panelGrid>
+                </p:dialog>
+
+                <!-- Modal de carregamento -->
+                <p:dialog widgetVar="loadingDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <h:panelGrid columns="2" style="text-align: center;">
+                        <h:outputText value="Processando, por favor aguarde..." />
+                    </h:panelGrid>
+                </p:dialog>
+
+                <p:confirmDialog widgetVar="deletePessoa" showEffect="fade" width="300"
+                                 message="Deletar a pessoa?" header="Confirmação" severity="warn">
+                    <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaBean.excluir(pessoaBean.pessoa)}"
+                                     process="@this" update=":form:dt-pessoas :form:messages"
+                                     oncomplete="PF('deletePessoa').hide()" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                     onclick="PF('deletePessoa').hide()" />
+                </p:confirmDialog>
+
+                <p:confirmDialog global="true" showEffect="fade" width="300">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                     icon="pi pi-times" />
+                </p:confirmDialog>
+            </h:form>
+        </div>
+
+    </h:body>
+
+</html>
