@@ -11,6 +11,7 @@ com\felipe\mvnsalarios\domain\PessoaSalarioConsolidado.class
 com\felipe\mvnsalarios\service\VencimentosService.class
 com\felipe\mvnsalarios\service\PessoaService.class
 com\felipe\mvnsalarios\domain\Cargo.class
+.netbeans_automatic_build
 com\felipe\mvnsalarios\service\CargoService.class
 com\felipe\mvnsalarios\repository\CargoVencimentosRepository.class
 com\felipe\mvnsalarios\domain\TipoVencimento.class
